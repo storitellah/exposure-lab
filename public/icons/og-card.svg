@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#171717"/>
+  <circle cx="240" cy="315" r="150" fill="none" stroke="#FBB03B" stroke-width="26"/>
+  <path d="M240 230 L316 390 L164 390 Z" fill="none" stroke="#F3F1EC" stroke-width="18" stroke-linejoin="round"/>
+  <circle cx="240" cy="230" r="30" fill="#FBB03B"/>
+  <circle cx="316" cy="390" r="30" fill="#3C82F6"/>
+  <circle cx="164" cy="390" r="30" fill="#2E9B62"/>
+  <text x="460" y="280" font-family="sans-serif" font-size="72" font-weight="800" fill="#F3F1EC">Tatu Exposure Lab</text>
+  <text x="460" y="340" font-family="sans-serif" font-size="34" font-weight="600" fill="#FBB03B">by Storitellah</text>
+  <text x="460" y="420" font-family="sans-serif" font-size="40" fill="#B9B4A8">Three controls. One creative decision.</text>
+</svg>

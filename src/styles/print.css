@@ -1,0 +1,59 @@
+/* Print Studio styles. The page format class on <body> sets the @page size.
+   Only the .print-sheet subtree is printed. */
+
+@media print {
+  body * { visibility: hidden; }
+  .print-sheet, .print-sheet * { visibility: visible; }
+  .print-sheet {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .no-print { display: none !important; }
+}
+
+.print-sheet {
+  background: #fff;
+  color: #111;
+  font-family: var(--font-body);
+  padding: 10mm;
+  margin: 0 auto;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  page-break-inside: avoid;
+}
+
+.print-sheet img { width: 100%; display: block; page-break-inside: avoid; }
+.print-sheet h2 { color: #111; }
+.print-meta { font-size: 10pt; margin-top: 4mm; display: flex; flex-wrap: wrap; gap: 2mm 8mm; }
+.print-credit { margin-top: 4mm; font-size: 8pt; color: #555; border-top: 1px solid #ccc; padding-top: 2mm; }
+.print-contact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+.print-contact-grid figure { margin: 0; page-break-inside: avoid; }
+.print-contact-grid figcaption { font-size: 7pt; }
+
+.certificate {
+  border: 3mm solid #FBB03B;
+  text-align: center;
+  padding: 14mm;
+}
+.certificate h2 { font-size: 22pt; }
+
+.worksheet ol { line-height: 2.1; }
+.worksheet .write-line { border-bottom: 1px solid #999; display: inline-block; min-width: 60mm; }
+
+/* Screen preview sizes (approximate mm at 96dpi ≈ 3.78 px/mm) */
+.fmt-a4-portrait { width: 794px; min-height: 1122px; }
+.fmt-a4-landscape { width: 1122px; min-height: 794px; }
+.fmt-letter-portrait { width: 816px; min-height: 1054px; }
+.fmt-letter-landscape { width: 1054px; min-height: 816px; }
+.fmt-a5 { width: 559px; min-height: 794px; }
+.fmt-print-4x6 { width: 384px; min-height: 576px; }
+.fmt-print-5x7 { width: 480px; min-height: 672px; }
+.fmt-print-8x10 { width: 768px; min-height: 960px; }
+.fmt-square { width: 794px; min-height: 794px; }
+.fmt-postcard { width: 559px; min-height: 397px; }
+.fmt-contact-sheet { width: 794px; min-height: 1122px; }
+
+@page { margin: 10mm; }
+.page-a4-portrait { size: A4 portrait; }
