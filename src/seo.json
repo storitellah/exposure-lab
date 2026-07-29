@@ -1,0 +1,81 @@
+{
+  "siteName": "Tatu Exposure Lab by Storitellah",
+  "defaultDescription": "Three controls. One creative decision. A free, offline-capable exposure triangle simulator that teaches aperture, shutter speed and ISO through hands-on experiment.",
+  "routes": [
+    {
+      "path": "/",
+      "title": "Tatu Exposure Lab by Storitellah — Learn the Exposure Triangle",
+      "description": "Three controls. One creative decision. A free interactive exposure triangle simulator for young photographers, students and teachers. Works offline, no account needed."
+    },
+    {
+      "path": "/learn",
+      "title": "Learn Photography Exposure — 12 Guided Lessons | Tatu Exposure Lab",
+      "description": "Twelve guided lessons that teach exposure step by step: aperture and depth of field, shutter speed and motion, ISO and noise, stops of light, metering and histograms."
+    },
+    {
+      "path": "/simulator",
+      "title": "Free Camera Simulator — Aperture, Shutter Speed and ISO | Tatu Exposure Lab",
+      "description": "Practise manual mode in a realistic camera simulator. Change aperture, shutter speed and ISO and see depth of field, motion blur and noise change instantly."
+    },
+    {
+      "path": "/video",
+      "title": "Video Exposure and Shutter Angle Simulator | Tatu Exposure Lab",
+      "description": "Learn frame rate, shutter angle and the 180-degree rule. Compare 24, 25, 30, 50, 60 and 120 fps and see how shutter speed changes motion cadence."
+    },
+    {
+      "path": "/challenges",
+      "title": "Photography Challenges — Freeze Motion, Blur Backgrounds | Tatu Exposure Lab",
+      "description": "Practical photography challenges: freeze a footballer, create light trails, blur a portrait background, keep a landscape sharp, shoot clean in low light."
+    },
+    {
+      "path": "/gallery",
+      "title": "Your Shot Gallery | Tatu Exposure Lab",
+      "description": "Your simulated photographs, stored privately on your own device. Compare attempts, mark favourites, export and print. Nothing is ever uploaded."
+    },
+    {
+      "path": "/print",
+      "title": "Print Studio — Worksheets, Contact Sheets and Certificates | Tatu Exposure Lab",
+      "description": "Print photographs with their camera settings, contact sheets, exposure triangle worksheets and challenge certificates in A4, US Letter and photo sizes."
+    },
+    {
+      "path": "/teacher",
+      "title": "Teacher Mode — Classroom Photography Lessons | Tatu Exposure Lab",
+      "description": "Build classroom photography lessons with no student accounts: lock controls, share a challenge link or QR code, print worksheets and export an answer guide."
+    },
+    {
+      "path": "/glossary",
+      "title": "Photography Glossary — Stops, Depth of Field, Shutter Angle | Tatu Exposure Lab",
+      "description": "Plain-language and advanced definitions of stops of light, depth of field, motion blur, ISO noise, dynamic range, crop factor, histograms, T-stops and log video."
+    },
+    {
+      "path": "/my-camera",
+      "title": "Use My Camera — Optional Live Exposure Preview | Tatu Exposure Lab",
+      "description": "An optional mode that shows a simulated exposure preview over your own camera image. Permission is only requested when you press the button; nothing is uploaded."
+    },
+    {
+      "path": "/accessibility",
+      "title": "Accessibility Statement | Tatu Exposure Lab",
+      "description": "How Tatu Exposure Lab meets WCAG 2.2 AA: keyboard operation, screen-reader labels, high-contrast and large-control modes, reduced motion and colour-safe indicators."
+    },
+    {
+      "path": "/privacy",
+      "title": "Privacy — No Accounts, No Uploads, No Tracking | Tatu Exposure Lab",
+      "description": "Your photographs and progress never leave your device. No accounts, no uploads, no trackers, no location, no microphone. Delete everything with one tap."
+    },
+    {
+      "path": "/security",
+      "title": "Security | Tatu Exposure Lab",
+      "description": "Security assumptions, data flow, camera permissions, upload validation, export handling and security headers for Tatu Exposure Lab, plus how to report a vulnerability."
+    },
+    {
+      "path": "/about",
+      "title": "About Tatu Exposure Lab by Storitellah",
+      "description": "Tatu means three. Photography exposure is controlled by three connected settings: aperture, shutter speed and ISO. An independent educational tool by Storitellah."
+    },
+    {
+      "path": "/support",
+      "title": "Support and Bug Reports | Tatu Exposure Lab",
+      "description": "Answers to common questions about exposure, camera permission, offline use, saved photographs and printing — plus how to report a bug."
+    }
+  ]
+}

@@ -74,11 +74,11 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <a href="#main" className="skip-link">{t('skipToContent')}</a>
       <header className="app-header">
-        <Link to="/" className="brand" ariaLabel={`${t('appName')} ${t('byStoritellah')}`}>
+        <Link to="/" className="brand">
           <Wordmark size={34} />
           <span>
             {t('appName')}
-            <small>{t('byStoritellah').toUpperCase()}</small>
+            <small>{t('byStoritellah')}</small>
           </span>
         </Link>
         <button

@@ -28,5 +28,18 @@ export default defineConfig({
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1366, height: 768 } } },
     { name: 'mobile', use: { ...devices['Pixel 5'], viewport: { width: 390, height: 844 } } },
+    /*
+     * Firefox and WebKit (Safari's engine) are opt-in because they need an
+     * extra download:  npx playwright install firefox webkit
+     * Then:            npx playwright test --project=firefox --project=webkit
+     * Edge shares Chromium's engine, so the `desktop` project covers it.
+     */
+    ...(process.env.CROSS_BROWSER
+      ? [
+          { name: 'firefox', use: { ...devices['Desktop Firefox'] } },
+          { name: 'webkit', use: { ...devices['Desktop Safari'] } },
+          { name: 'mobile-safari', use: { ...devices['iPhone 13'] } },
+        ]
+      : []),
   ],
 });

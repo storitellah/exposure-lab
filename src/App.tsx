@@ -1,8 +1,9 @@
 /** Route table. Pages are lazy-loaded to keep the initial bundle small. */
-import { lazy, Suspense, Component, type ReactNode } from 'react';
+import { lazy, Suspense, Component, useEffect, type ReactNode } from 'react';
 import { useRouter } from './router';
 import { Layout } from './components/Layout';
 import { useI18n } from './i18n';
+import { applyRouteMeta } from './seo';
 
 const Home = lazy(() => import('./pages/Home'));
 const Learn = lazy(() => import('./pages/Learn'));
@@ -34,6 +35,10 @@ class ErrorBoundary extends Component<{ children: ReactNode; message: string }, 
 export function App() {
   const { path } = useRouter();
   const { t } = useI18n();
+
+  // Keep the document title, description and canonical URL in step with the
+  // route, so shared links and browser history are meaningful.
+  useEffect(() => { applyRouteMeta(path); }, [path]);
 
   const page = () => {
     if (path === '/' || path === '') return <Home />;

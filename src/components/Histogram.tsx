@@ -36,8 +36,8 @@ export function Histogram({ data }: { data: HistogramData }) {
       />
       {(clipHigh || clipLow) && (
         <p className="meter-status" role="status">
-          {clipHigh && <span style={{ color: 'var(--warning)' }}>▲ {t('clippingHighlights')} </span>}
-          {clipLow && <span style={{ color: 'var(--accent)' }}>▼ {t('clippingShadows')}</span>}
+          {clipHigh && <span style={{ color: 'var(--warning-text)' }}>▲ {t('clippingHighlights')} </span>}
+          {clipLow && <span style={{ color: 'var(--accent-text)' }}>▼ {t('clippingShadows')}</span>}
         </p>
       )}
     </div>

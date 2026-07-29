@@ -99,7 +99,7 @@ function ChallengeList({ onStart, urlError, dismissError }: {
             <h3>{c.video ? '🎬 ' : '📷 '}{pick(c.title)}</h3>
             <p style={{ fontSize: '0.9rem' }}>{pick(c.brief)}</p>
             {state.progress.bestScores[c.id] !== undefined && (
-              <p style={{ fontSize: '0.85rem', color: 'var(--success)' }}>
+              <p style={{ fontSize: '0.85rem', color: 'var(--success-text)' }}>
                 {t('personalBest')}: {state.progress.bestScores[c.id]}/100
               </p>
             )}

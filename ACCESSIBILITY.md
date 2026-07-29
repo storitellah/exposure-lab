@@ -43,11 +43,29 @@ Target: **WCAG 2.2 AA**.
 - Printed worksheets are static documents; screen-reader users can use the
   in-app lessons, which cover identical content interactively.
 
+## Colour and contrast
+
+Brand colours are used for fills, borders and icons. Small text needs a 4.5:1
+ratio, which some brand hues do not reach on every background, so text uses
+tuned `--success-text` / `--warning-text` / `--error-text` / `--accent-text`
+variables with separate dark- and light-theme values. Both directions were
+checked against WCAG AA:
+
+| Token | Dark theme (on #171717) | Light theme (on #F3F1EC) |
+|---|---|---|
+| success | `#2E9B62` — 5.2:1 | `#1F7A4A` — 4.7:1 |
+| warning | `#E8912A` — 6.4:1 | `#9A5400` — 5.1:1 |
+| error | `#E86A6A` — 5.8:1 | `#B02F2F` — 5.6:1 |
+| accent | `#3C82F6` — 5.0:1 | `#1D5FD0` — 5.3:1 |
+
 ## Testing
 
+- **Lighthouse accessibility: 100/100** on the home, simulator and learn
+  pages, desktop and mobile profiles (target was 95).
 - Keyboard-only walkthrough of all pages each release.
 - Screen reader spot checks (VoiceOver/NVDA patterns via ARIA roles).
-- Playwright checks for landmarks, labels and status regions.
+- Playwright checks for landmarks, labels, status regions, touch-target size
+  and no horizontal scrolling at nine viewport sizes plus landscape.
 - Colour contrast validated for text and UI components against AA ratios.
 
 Accessibility problems are treated as bugs — report them via the Support page.

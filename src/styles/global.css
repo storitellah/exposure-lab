@@ -19,6 +19,15 @@
   --fg-dim: #B9B4A8;
   --line: #454545;
 
+  /* Brand colours above are used for fills, borders and icons. Small text
+     needs a 4.5:1 ratio, which the brand hues do not reach on every
+     background, so text uses these tuned variants (dark theme here, light
+     theme overrides below). Both directions were checked against WCAG AA. */
+  --success-text: var(--success);
+  --warning-text: #E8912A;
+  --error-text: #E86A6A;
+  --accent-text: var(--accent);
+
   --radius: 12px;
   --radius-s: 8px;
   --touch: 44px;
@@ -38,6 +47,10 @@
   --fg: #1D1D1D;
   --fg-dim: #55524A;
   --line: #CFCABE;
+  --success-text: #1F7A4A;
+  --warning-text: #9A5400;
+  --error-text: #B02F2F;
+  --accent-text: #1D5FD0;
 }
 
 @media (prefers-color-scheme: light) {
@@ -48,6 +61,10 @@
     --fg: #1D1D1D;
     --fg-dim: #55524A;
     --line: #CFCABE;
+    --success-text: #1F7A4A;
+    --warning-text: #9A5400;
+    --error-text: #B02F2F;
+    --accent-text: #1D5FD0;
   }
 }
 
@@ -93,7 +110,7 @@ h1 { font-size: clamp(1.7rem, 4.5vw, 2.6rem); font-weight: 800; }
 h2 { font-size: clamp(1.3rem, 3vw, 1.8rem); font-weight: 700; }
 h3 { font-size: 1.15rem; font-weight: 700; }
 
-a { color: var(--accent); }
+a { color: var(--accent-text); }
 a:hover { text-decoration-thickness: 2px; }
 
 :focus-visible {
@@ -160,7 +177,14 @@ a:hover { text-decoration-thickness: 2px; }
   font-size: 1.05rem;
   white-space: nowrap;
 }
-.brand small { display: block; font-size: 0.62rem; color: var(--fg-dim); font-weight: 600; letter-spacing: 0.06em; }
+.brand small {
+  display: block;
+  font-size: 0.62rem;
+  color: var(--fg-dim);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
 
 .main-nav { display: flex; gap: 0.15rem; flex-wrap: wrap; margin-left: auto; }
 .icon-btn.nav-toggle { display: none; margin-left: auto; }
@@ -194,7 +218,17 @@ a:hover { text-decoration-thickness: 2px; }
 }
 .icon-btn:hover { border-color: var(--yellow); }
 
-main.app-main { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 1rem; }
+main.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+  /* Hold a full viewport of height while a lazily-loaded page arrives. The
+     footer therefore starts below the fold and never jumps when the real
+     content renders taller than the placeholder. */
+  min-height: 100vh;
+}
 
 .app-footer {
   background: var(--bg-2);
@@ -265,7 +299,7 @@ a.card {
   text-decoration: none;
 }
 a.card h2, a.card h3 {
-  color: var(--accent);
+  color: var(--accent-text);
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
@@ -306,7 +340,11 @@ a.card:hover h2, a.card:hover h3 { color: var(--yellow); }
   border-radius: var(--radius);
   overflow: hidden;
   border: 2px solid var(--dark-2);
+  /* Reserve the frame before the canvas has sized itself, so loading the
+     scene never shifts the page underneath it. */
+  aspect-ratio: 800 / 500;
 }
+.viewfinder canvas { height: 100%; object-fit: cover; }
 .viewfinder canvas { display: block; width: 100%; height: auto; }
 .vf-overlay { position: absolute; inset: 0; pointer-events: none; }
 .vf-readout {
@@ -410,9 +448,9 @@ input[type='range'] {
   transition: left 0.15s ease;
 }
 .meter-status { font-weight: 700; font-size: 0.85rem; }
-.meter-status.ok { color: var(--success); }
-.meter-status.over { color: var(--warning); }
-.meter-status.under { color: var(--accent); }
+.meter-status.ok { color: var(--success-text); }
+.meter-status.over { color: var(--warning-text); }
+.meter-status.under { color: var(--accent-text); }
 
 .histogram { width: 100%; height: 74px; background: var(--bg-3); border-radius: var(--radius-s); }
 

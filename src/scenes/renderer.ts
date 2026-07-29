@@ -41,6 +41,7 @@ const supportsFilter = (() => {
 
 function layerCanvases(scene: SceneDef, width: number): HTMLCanvasElement[] {
   if (cache && cache.sceneId === scene.id && cache.width === width) return cache.canvases;
+  blurCache = []; // base layers changed, so any blurred copies are stale
   const height = Math.round((width * REF_H) / REF_W);
   const canvases = scene.layers.map((layer) => {
     const c = document.createElement('canvas');
@@ -57,24 +58,60 @@ function layerCanvases(scene: SceneDef, width: number): HTMLCanvasElement[] {
   return canvases;
 }
 
-/** Cheap blur fallback: draw through a small intermediate canvas. */
-function blurFallback(src: HTMLCanvasElement, px: number): HTMLCanvasElement {
-  const factor = Math.max(1, Math.min(16, px));
+/**
+ * Defocus blur.
+ *
+ * A full-resolution Gaussian blur costs roughly pixels × radius, which is by
+ * far the most expensive thing this renderer does. Because a blur is a
+ * low-pass filter, blurring a downscaled copy and scaling it back up is
+ * visually equivalent for large radii and dramatically cheaper — and it also
+ * serves as the fallback where `ctx.filter` is unavailable, since the
+ * downscale/upscale alone approximates the same softening.
+ */
+function renderBlur(src: HTMLCanvasElement, radius: number): HTMLCanvasElement {
+  const downscale = radius > 6 ? Math.min(5, radius / 3) : 1;
+  const w = Math.max(8, Math.round(src.width / downscale));
+  const h = Math.max(8, Math.round(src.height / downscale));
+
   const tmp = document.createElement('canvas');
-  tmp.width = Math.max(8, Math.round(src.width / factor));
-  tmp.height = Math.max(8, Math.round(src.height / factor));
+  tmp.width = w;
+  tmp.height = h;
   const tctx = tmp.getContext('2d');
   if (!tctx) return src;
   tctx.imageSmoothingEnabled = true;
-  tctx.drawImage(src, 0, 0, tmp.width, tmp.height);
+  if (supportsFilter) tctx.filter = `blur(${(radius / downscale).toFixed(2)}px)`;
+  tctx.drawImage(src, 0, 0, w, h);
+
+  if (downscale === 1 && supportsFilter) return tmp;
+
   const out = document.createElement('canvas');
   out.width = src.width;
   out.height = src.height;
   const octx = out.getContext('2d');
-  if (!octx) return src;
+  if (!octx) return tmp;
   octx.imageSmoothingEnabled = true;
+  octx.imageSmoothingQuality = 'high';
   octx.drawImage(tmp, 0, 0, out.width, out.height);
   return out;
+}
+
+/**
+ * One cached blurred copy per layer. Most re-renders (changing ISO, shutter,
+ * white balance, or simply re-rendering) leave defocus untouched, so this
+ * turns the dominant cost into a cache hit while staying bounded in memory.
+ */
+interface BlurEntry { bucket: number; canvas: HTMLCanvasElement }
+let blurCache: (BlurEntry | undefined)[] = [];
+
+function blurredLayer(index: number, src: HTMLCanvasElement, blurPx: number): HTMLCanvasElement {
+  if (blurPx < 0.6) return src;
+  // Half-pixel buckets: finer steps are invisible but would thrash the cache.
+  const bucket = Math.round(blurPx * 2) / 2;
+  const hit = blurCache[index];
+  if (hit && hit.bucket === bucket && hit.canvas.width === src.width) return hit.canvas;
+  const canvas = renderBlur(src, bucket);
+  blurCache[index] = { bucket, canvas };
+  return canvas;
 }
 
 const WB_TINT: Record<ExposureSettings['whiteBalance'], [number, number, number]> = {
@@ -151,21 +188,7 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
     const shakePx = Math.min(26, shake * 5) * scale * 0.4;
     const totalMotion = Math.hypot(motionX, motionY) + shakePx;
 
-    let drawable: HTMLCanvasElement = src;
-    if (blurPx > 0.6) {
-      if (supportsFilter) {
-        const tmp = document.createElement('canvas');
-        tmp.width = src.width; tmp.height = src.height;
-        const tctx = tmp.getContext('2d');
-        if (tctx) {
-          tctx.filter = `blur(${Math.min(30, blurPx).toFixed(1)}px)`;
-          tctx.drawImage(src, 0, 0);
-          drawable = tmp;
-        }
-      } else {
-        drawable = blurFallback(src, blurPx * 0.5 + 1);
-      }
-    }
+    const drawable = blurredLayer(i, src, Math.min(30, blurPx));
 
     if (totalMotion > 1.5) {
       // Light-emitting layers streak into trails on long exposures.
@@ -289,7 +312,8 @@ export function computeHistogram(canvas: HTMLCanvasElement): HistogramData {
   return { bins, clippedHighlights: clipped / total, crushedShadows: crushed / total };
 }
 
-/** Reset the cached layers (used when the scene changes). */
+/** Reset the cached layers and blurred copies (used when the scene changes). */
 export function invalidateSceneCache(): void {
   cache = null;
+  blurCache = [];
 }

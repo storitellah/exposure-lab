@@ -30,23 +30,35 @@ export function SceneCanvas(props: SceneCanvasProps) {
 
   useEffect(() => () => invalidateSceneCache(), [props.sceneId]);
 
+  /*
+   * Rendering is scheduled on an animation frame rather than run inline.
+   * Dragging a slider fires many changes per frame; coalescing them keeps
+   * the main thread free and means at most one render is drawn per frame.
+   * The histogram is computed a moment later so it never delays the image.
+   */
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    renderScene(canvas, {
-      scene,
-      settings: props.settings,
-      sensor: props.sensor,
-      noiseProfile: props.noiseProfile,
-      quality: props.quality,
-      vignetting: props.vignetting ?? 'low',
+    const frame = requestAnimationFrame(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      renderScene(canvas, {
+        scene,
+        settings: props.settings,
+        sensor: props.sensor,
+        noiseProfile: props.noiseProfile,
+        quality: props.quality,
+        vignetting: props.vignetting ?? 'low',
+      });
+      if (onHistogram) {
+        if (histTimer.current !== null) window.clearTimeout(histTimer.current);
+        histTimer.current = window.setTimeout(() => {
+          if (canvasRef.current) onHistogram(computeHistogram(canvasRef.current));
+        }, 120);
+      }
     });
-    if (onHistogram) {
+    return () => {
+      cancelAnimationFrame(frame);
       if (histTimer.current !== null) window.clearTimeout(histTimer.current);
-      histTimer.current = window.setTimeout(() => {
-        if (canvasRef.current) onHistogram(computeHistogram(canvasRef.current));
-      }, 90);
-    }
+    };
   }, [scene, props.settings, props.sensor, props.noiseProfile, props.quality, props.vignetting, onHistogram]);
 
   const handleTap = (clientX: number, clientY: number) => {

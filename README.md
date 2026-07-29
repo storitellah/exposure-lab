@@ -31,14 +31,28 @@ self-hosted — no third-party CDNs at runtime.
 npm install        # install dependencies
 npm run dev        # local dev server on http://localhost:5173
 npm test           # unit tests (Vitest)
-npm run test:e2e   # browser tests (Playwright; needs a Chromium install)
+npm run test:e2e   # browser tests (Playwright, Chromium desktop + mobile)
 npm run lint       # ESLint
 npm run typecheck  # tsc --noEmit
-npm run build      # production build into dist/
+npm run build      # production build into dist/ (includes per-route metadata)
 npm run preview    # serve the production build locally
+npm run icons      # regenerate PWA icons from code
+npm run import:catalogue -- cameras file.csv   # update the camera catalogue
 ```
 
-No environment variables are required for the core application.
+No environment variables are required for the core application. One optional
+variable improves search-engine metadata:
+
+```bash
+SITE_URL=https://lab.example.org npm run build   # also emits sitemap.xml + robots.txt
+```
+
+Cross-browser runs are opt-in because they need extra browser downloads:
+
+```bash
+npx playwright install firefox webkit
+CROSS_BROWSER=1 npx playwright test
+```
 
 ## Deployment — Cloudflare Pages
 
@@ -71,17 +85,30 @@ and replicate the headers from `public/_headers`.
 
 ## Updating content
 
-### Camera data
+### Camera and lens data
 
-Edit `src/data/cameras.json` (or replace it wholesale via a JSON/CSV export
-from a spreadsheet — keep the same field names, one object per body). Bump
-`catalogueVersion` and `updated`. No interface code changes are needed;
-`src/data/catalogue.ts` types and serves whatever the JSON contains.
+Catalogues are versioned JSON (`src/data/cameras.json`, `src/data/lenses.json`)
+and are never hard-coded into components, so they can be updated on their own.
 
-### Lens data
+Either edit the JSON directly, or import a spreadsheet export:
 
-Same procedure with `src/data/lenses.json`. New mounts only need an adapter
-entry in `ADAPTERS` (`src/data/catalogue.ts`) if cross-mount use is expected.
+```bash
+# Replace the catalogue with the rows in a CSV
+npm run import:catalogue -- cameras new-cameras.csv
+
+# Add to / update the existing catalogue, matching on the `id` column
+npm run import:catalogue -- lenses new-lenses.csv --merge
+
+# JSON works too (an array, or an object with a "cameras"/"lenses" array)
+npm run import:catalogue -- cameras new-cameras.json
+```
+
+The importer validates required fields, coerces numbers, booleans and
+`;`-separated lists, understands `noise.cleanIso` / `noise.strength` columns,
+rejects duplicate ids, and bumps `catalogueVersion` and `updated` for you. If
+anything fails validation it exits non-zero and leaves the catalogue
+untouched. New mounts only need an entry in `ADAPTERS`
+(`src/data/catalogue.ts`) if cross-mount use should be possible.
 
 ### Scenes
 
@@ -140,6 +167,25 @@ e2e/               Playwright browser tests
 | `npm audit` | ✅ 0 vulnerabilities |
 | `npm run build` | ✅ ~66 kB gzipped entry chunk |
 
+### Lighthouse
+
+Measured against the production build (`npm run build && npm run preview`),
+Chromium headless. Mobile is Lighthouse's default throttled profile.
+
+| Page | Profile | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|---|
+| `/simulator` | desktop | **100** | **100** | **100** | **100** |
+| `/` | mobile | **100** | **100** | **100** | **100** |
+| `/simulator` | mobile | **97** | **100** | **100** | **100** |
+| `/learn` | mobile | **99** | **100** | **100** | **100** |
+
+All above the targets (Performance 90, Accessibility 95, Best Practices 95,
+SEO 90). On the mobile profile the simulator reports LCP 2.5 s, TBT 50 ms and
+CLS 0.
+
+Scores are environment-sensitive; re-run with
+`CHROME_PATH=<chromium> npx lighthouse http://localhost:4173/simulator`.
+
 Unit tests cover the exposure equation and stop arithmetic, aperture/shutter/ISO
 changes, depth of field, crop factor, field of view, shutter angle, auto-exposure
 solving, noise, lens/body compatibility, challenge scoring, challenge-URL parsing,
@@ -153,6 +199,52 @@ and explaining an adapter); completing a lesson; opening and validating
 challenge links; scoring a challenge; keyboard control; camera-permission
 denial; language switching; clearing local data; the 180° shutter-angle rule;
 and no horizontal scrolling at all nine required viewport sizes plus landscape.
+
+## Deployment checklist
+
+1. `npm ci` — install exactly the pinned dependency tree.
+2. `npm run lint && npm run typecheck && npm test` — all must pass.
+3. `npx playwright test` — 50 browser tests; add `CROSS_BROWSER=1` after
+   installing Firefox/WebKit if you want those engines too.
+4. `npm audit` — expect 0 vulnerabilities.
+5. `SITE_URL=https://your-domain npm run build` — production build with
+   per-route metadata, `sitemap.xml` and `robots.txt`.
+6. Confirm `dist/` contains `_headers`, `_redirects`, `sw.js`,
+   `manifest.webmanifest`, `icons/` and one `index.html` per route.
+7. Deploy (build command `npm run build`, output directory `dist`).
+8. After deploy, verify:
+   - security headers are present (browser devtools → Network → response headers);
+   - the app installs as a PWA and still works with the network disabled;
+   - the shutter button takes a photograph and the gallery persists it;
+   - a challenge link opens the right scene, and a malformed one is rejected;
+   - camera permission is only requested by the "Use My Camera" button.
+9. Bump `VERSION` in `public/sw.js` and `APP_VERSION` in `src/version.ts` for
+   the next release so returning users get the update prompt.
+
+## Known browser limitations
+
+- **Verified in Chromium** (desktop and mobile emulation) for rendering,
+  interaction and Lighthouse. Firefox and WebKit/Safari are supported through
+  feature detection but were not executed here — the browser downloads are
+  blocked in this build environment. Run `CROSS_BROWSER=1 npx playwright test`
+  locally to exercise them.
+- **`ctx.filter`** (canvas blur) is unavailable in a few older engines. The
+  renderer detects this and falls back to a downscale/upscale blur, so depth
+  of field still reads correctly, with slightly softer bokeh edges.
+- **Safari/iOS**: `beforeinstallprompt` does not exist, so the in-app
+  "Install app" button is hidden — installing is done through Share → Add to
+  Home Screen. `navigator.share` is used where present.
+- **Device camera** exposes no real aperture/shutter/ISO control to web pages
+  on any browser, so "Use My Camera" clearly labels its exposure preview as
+  simulated rather than pretending to drive the hardware.
+- **`navigator.vibrate`** is ignored on iOS; capture haptics are silently
+  skipped there.
+- **Private browsing** can block IndexedDB. Saving a photograph then reports
+  a friendly storage error and the rest of the app keeps working.
+- **OffscreenCanvas / Web Workers** are not used: after caching blurred
+  layers and coalescing renders into animation frames, total blocking time is
+  ~50 ms, so moving work off the main thread would add complexity without a
+  measurable benefit.
 
 ## Documentation
 
