@@ -509,6 +509,16 @@ table.data th { background: var(--bg-3); }
 .home-hero .tagline { font-size: 1.2rem; color: var(--fg-dim); font-weight: 600; }
 .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
 
+/* Static boot content in index.html, replaced by React on mount. Visible
+   only while loading, or if the app files failed to load at all. */
+.boot-fallback {
+  max-width: 34rem;
+  margin: 12vh auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+.boot-fallback .boot-hint { color: var(--fg-dim); font-size: 0.95rem; }
+
 .sr-only {
   position: absolute; width: 1px; height: 1px;
   clip-path: inset(50%); overflow: hidden; white-space: nowrap;

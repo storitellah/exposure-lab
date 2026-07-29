@@ -15,7 +15,27 @@
     <title>Tatu Exposure Lab by Storitellah</title>
   </head>
   <body>
-    <div id="root"></div>
+    <!--
+      Static boot content. React replaces it as soon as the app mounts, so if
+      it is still on screen something failed to load — a blank page tells the
+      user nothing, this tells them what to try. No inline script is used, to
+      keep the strict Content-Security-Policy intact.
+    -->
+    <div id="root">
+      <div class="boot-fallback">
+        <h1>Tatu Exposure Lab</h1>
+        <p>Three controls. One creative decision.</p>
+        <p class="boot-hint">
+          Loading the simulator… If this message stays on screen, the app
+          files could not be loaded. Try reloading the page, or check your
+          connection.
+        </p>
+        <noscript>
+          <strong>This simulator needs JavaScript.</strong>
+          Please enable JavaScript for this site and reload the page.
+        </noscript>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

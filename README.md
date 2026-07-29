@@ -75,6 +75,54 @@ npm run build
 npx wrangler pages deploy dist --project-name tatu-exposure-lab
 ```
 
+### Troubleshooting a blank / white page
+
+A white page almost always means the browser could not load `/assets/index-<hash>.js`.
+Open devtools → Console. The tell-tale error is:
+
+> Failed to load module script: Expected a JavaScript-or-Wasm module script but
+> the server responded with a MIME type of "text/html"
+
+That means the request for the JavaScript bundle was answered with `index.html`.
+There are two causes, and both are now guarded against:
+
+1. **The SPA catch-all shadowed the built assets.** `public/_redirects` lists
+   passthrough rules for `/assets/*`, `/icons/*`, `/sw.js`, the manifest,
+   `robots.txt` and `sitemap.xml` **above** the `/* → /index.html` catch-all,
+   so the catch-all can never swallow a real file — on any host, whatever
+   order it evaluates rules in.
+2. **The build output directory is wrong.** If Pages serves the repository
+   root instead of `dist/`, visitors get the *source* `index.html`, which
+   points at `/src/main.tsx` — a file that only exists during development.
+   Confirm in the Pages project settings:
+   - Build command: `npm run build`
+   - **Build output directory: `dist`**
+   - Root directory: the repository root (blank)
+
+Check both before deploying with:
+
+```bash
+npm run build && npm run verify:dist
+```
+
+`verify:dist` serves `dist/` the way a static host does — applying the real
+`_headers` (so the strict CSP is actually in force) and the `_redirects` rules
+— then loads six routes in a browser and fails if the app does not mount or if
+any rule could rewrite a built asset to HTML. `npm run preview` applies neither
+file, which is exactly how a routing or header problem can pass every other
+test and still ship a blank page.
+
+If the app still cannot start, it now says so on screen instead of rendering
+white: `index.html` ships static fallback content that React replaces on
+mount, and a failure while mounting is caught and reported as readable text.
+
+Two other deployment notes:
+
+- **Do not set `NODE_ENV=production`** in the Pages environment variables.
+  npm then skips devDependencies, and the build needs Vite and TypeScript.
+- Bump `VERSION` in `public/sw.js` on each release so returning visitors are
+  offered the update rather than being served an old cached shell.
+
 ### Custom domain
 
 Pages project → **Custom domains** → add your domain (e.g.
@@ -209,8 +257,9 @@ and no horizontal scrolling at all nine required viewport sizes plus landscape.
 4. `npm audit` — expect 0 vulnerabilities.
 5. `SITE_URL=https://your-domain npm run build` — production build with
    per-route metadata, `sitemap.xml` and `robots.txt`.
-6. Confirm `dist/` contains `_headers`, `_redirects`, `sw.js`,
-   `manifest.webmanifest`, `icons/` and one `index.html` per route.
+6. `npm run verify:dist` — serves the build with the real `_headers` and
+   `_redirects` and fails if the app does not mount or if a routing rule
+   could rewrite a built asset to HTML (the blank-page failure mode).
 7. Deploy (build command `npm run build`, output directory `dist`).
 8. After deploy, verify:
    - security headers are present (browser devtools → Network → response headers);

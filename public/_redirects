@@ -1,2 +1,20 @@
-# SPA fallback: serve the app shell for all client-side routes.
-/*  /index.html  200
+# Cloudflare Pages routing.
+#
+# Rules are matched top to bottom, first match wins. The build's real files
+# (hashed assets, icons, service worker, manifest) are listed FIRST so the
+# single-page-app catch-all below can never shadow them.
+#
+# Without these passthrough rules a request for /assets/index-abc123.js can be
+# answered with index.html; the browser then refuses to execute HTML as a
+# module script ("Expected a JavaScript-or-Wasm module script but the server
+# responded with a MIME type of text/html") and the page renders blank.
+
+/assets/*            /assets/:splat            200
+/icons/*             /icons/:splat             200
+/sw.js               /sw.js                    200
+/manifest.webmanifest /manifest.webmanifest    200
+/robots.txt          /robots.txt               200
+/sitemap.xml         /sitemap.xml              200
+
+# Everything else is a client-side route: serve the app shell.
+/*                   /index.html               200

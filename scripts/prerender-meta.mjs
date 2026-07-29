@@ -26,8 +26,31 @@ const template = readFileSync(join(dist, 'index.html'), 'utf8');
 const attr = (s) =>
   s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
+/*
+ * Lesson pages are real URLs (/learn/<id>), so give each one its own file
+ * too. Every reachable path is then a static file and nothing depends on the
+ * single-page-app fallback, which is one less thing to misconfigure on a
+ * host — and each lesson becomes independently crawlable.
+ */
+const lessonSource = readFileSync(join(root, 'src', 'data', 'lessons.ts'), 'utf8');
+const lessons = [...lessonSource.matchAll(
+  /id: '([a-z0-9-]+)', sceneId:[\s\S]*?title: \{ en: '([^']+)'/g,
+)].map((m) => ({ id: m[1], title: m[2] }));
+if (lessons.length === 0) {
+  console.error('prerender-meta: found no lessons — the parser needs updating.');
+  process.exit(1);
+}
+const learnMeta = seo.routes.find((r) => r.path === '/learn');
+const lessonRoutes = lessons.map(({ id, title }) => ({
+  path: `/learn/${id}`,
+  title: `${title} — Photography Lesson | Tatu Exposure Lab`,
+  description: learnMeta?.description ?? seo.defaultDescription,
+}));
+
+const allRoutes = [...seo.routes, ...lessonRoutes];
+
 let written = 0;
-for (const route of seo.routes) {
+for (const route of allRoutes) {
   let html = template
     .replace(/<title>.*?<\/title>/s, `<title>${attr(route.title)}</title>`)
     .replace(
@@ -68,7 +91,7 @@ if (siteUrl) {
   const sitemap = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...seo.routes.map((r) => `  <url><loc>${attr(siteUrl + r.path)}</loc></url>`),
+    ...allRoutes.map((r) => `  <url><loc>${attr(siteUrl + r.path)}</loc></url>`),
     '</urlset>',
   ].join('\n');
   writeFileSync(join(dist, 'sitemap.xml'), `${sitemap}\n`);

@@ -2,11 +2,12 @@
   "name": "tatu-exposure-lab",
   "private": true,
   "version": "1.0.0",
-  "description": "Tatu Exposure Lab by Storitellah — an interactive exposure triangle simulator for young photographers.",
+  "description": "Tatu Exposure Lab by Storitellah \u2014 an interactive exposure triangle simulator for young photographers.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build && node scripts/prerender-meta.mjs",
+    "verify:dist": "node scripts/verify-dist.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "import:catalogue": "node scripts/import-catalogue.mjs",
     "preview": "vite preview",
