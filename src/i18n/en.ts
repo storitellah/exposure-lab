@@ -41,6 +41,9 @@ export const en = {
   limitManualFocus: 'manual focus only', limitSlowerAf: 'autofocus may be slower',
   limitNoElectronic: 'no electronic lens control', limitCrop: 'image is cropped',
   limitNoStab: 'stabilisation link unavailable',
+  atFocal: 'at',
+  kitLens: 'kit lens',
+  variableApertureNote: 'This zoom has a changing maximum aperture: it opens to {wide}, but only to {tele} once you zoom in. Zooming in therefore makes the picture darker unless you adjust another setting.',
   sensorFormat: 'Sensor format', cropFactor: 'Crop factor', isoRange: 'ISO range',
   shutterRange: 'Shutter range', lensMount: 'Lens mount',
 

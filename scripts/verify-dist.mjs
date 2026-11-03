@@ -104,7 +104,13 @@ const server = createServer((req, res) => {
 await new Promise((r) => server.listen(PORT, r));
 
 const failures = [];
-const browser = await chromium.launch();
+// Honour the same override as playwright.config.ts, so environments that
+// ship their own Chromium (CI images, sandboxes) can point at it.
+const browser = await chromium.launch(
+  process.env.PLAYWRIGHT_CHROMIUM_PATH
+    ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH }
+    : {},
+);
 
 /* ---------- 1. assets must be served as scripts, never as HTML ---------- */
 const indexHtml = readFileSync(join(dist, 'index.html'), 'utf8');

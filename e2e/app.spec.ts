@@ -71,6 +71,30 @@ test.describe('core flows', () => {
     await expect(page.getByTestId('adapter-note')).toHaveCount(0);
   });
 
+  test('kit zoom narrows its own aperture as you zoom in', async ({ page }) => {
+    await openApp(page, '/simulator');
+    await page.getByTestId('toggle-gear').click();
+    await page.getByTestId('camera-select').selectOption('canon-r100');
+    await page.getByTestId('lens-select').selectOption('canon-rfs18-45');
+    await expect(page.getByTestId('variable-aperture-note')).toContainText('f/4.5');
+
+    const focal = page.locator('.control-row', { hasText: 'Focal length' }).locator('output');
+    const zoomOut = page.getByRole('button', { name: 'Focal length −' });
+    const open = page.getByRole('button', { name: 'Aperture −' });
+
+    // Wide end, opened as far as the lens allows: f/4.5.
+    for (let i = 0; i < 40 && (await zoomOut.isEnabled()); i++) await zoomOut.click();
+    for (let i = 0; i < 15 && (await open.isEnabled()); i++) await open.click();
+    await expect(focal).toHaveText('18mm');
+    await expect(page.getByTestId('readout-aperture')).toHaveText('f/4.5');
+
+    // Zoom to the long end and the aperture closes on its own to f/6.3.
+    const zoomIn = page.getByRole('button', { name: 'Focal length +' });
+    for (let i = 0; i < 40 && (await zoomIn.isEnabled()); i++) await zoomIn.click();
+    await expect(focal).toHaveText('45mm');
+    await expect(page.getByTestId('readout-aperture')).toHaveText('f/6.3');
+  });
+
   test('completes the first lesson', async ({ page }) => {
     await openApp(page, '/learn/what-is-exposure');
     // The lesson starts deliberately overexposed — there must be something

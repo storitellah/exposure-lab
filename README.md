@@ -54,6 +54,13 @@ npx playwright install firefox webkit
 CROSS_BROWSER=1 npx playwright test
 ```
 
+If the environment already ships a Chromium build (CI images, sandboxes),
+point the browser tests and `verify:dist` at it instead of downloading one:
+
+```bash
+PLAYWRIGHT_CHROMIUM_PATH=/path/to/chromium npx playwright test
+```
+
 ## Deployment — Cloudflare Pages
 
 ### Via GitHub (recommended)
@@ -153,7 +160,19 @@ npm run import:catalogue -- cameras new-cameras.json
 
 The importer validates required fields, coerces numbers, booleans and
 `;`-separated lists, understands `noise.cleanIso` / `noise.strength` columns,
-rejects duplicate ids, and bumps `catalogueVersion` and `updated` for you. If
+rejects duplicate ids, and bumps `catalogueVersion` and `updated` for you.
+
+Two optional fields are worth knowing about:
+
+- A camera's `kitLensId` names the lens it ships with. That lens is marked
+  "kit lens" in the picker and is chosen automatically when you switch to a
+  body whose current lens does not fit — e.g. the Canon EOS R100 comes with
+  the RF-S 18-45mm F4.5-6.3 IS STM.
+- A lens's `maxApertureTele` is its widest aperture at the long end of the
+  zoom. Set it on kit zooms and the simulator models the aperture narrowing
+  as you zoom in (f/4.5 at 18mm but only f/6.3 at 45mm), closing the aperture
+  by itself and explaining why — the behaviour that confuses most beginners
+  with their first lens. Leave it out for primes and constant-aperture zooms. If
 anything fails validation it exits non-zero and leaves the catalogue
 untouched. New mounts only need an entry in `ADAPTERS`
 (`src/data/catalogue.ts`) if cross-mount use should be possible.

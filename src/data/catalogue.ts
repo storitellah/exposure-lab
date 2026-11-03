@@ -39,6 +39,8 @@ export interface CameraProfile {
   bodyStyle: string;
   releaseStatus: string;
   dataSource: string;
+  /** The lens this body is normally sold with, selected automatically. */
+  kitLensId?: string;
 }
 
 export interface LensProfile {
@@ -49,7 +51,14 @@ export interface LensProfile {
   coverage: 'full-frame' | 'aps-c' | 'mft' | 's35' | 'medium-format';
   minFocal: number;
   maxFocal: number;
+  /** Widest aperture at the short end of the zoom (or the only one on a prime). */
   maxAperture: number;
+  /**
+   * Widest aperture at the long end, for zooms whose maximum aperture
+   * narrows as you zoom in — most kit lenses. Omitted on constant-aperture
+   * zooms and primes.
+   */
+  maxApertureTele?: number;
   minAperture: number;
   tStop: number | null;
   type: 'prime' | 'zoom';
@@ -93,13 +102,35 @@ export function sensorOf(cam: CameraProfile): SensorFormat {
   return { name: cam.sensorFormat, widthMm: cam.sensorWidthMm, heightMm: cam.sensorHeightMm };
 }
 
-export function limitsOf(cam: CameraProfile, lens: LensProfile): CameraLimits {
+/**
+ * Widest aperture actually available at a given focal length.
+ *
+ * On a kit zoom the maximum aperture narrows as you zoom in — an 18-45mm
+ * f/4.5-6.3 can only open to f/6.3 once it is racked out to 45mm. The
+ * f-number is proportional to focal length over entrance-pupil diameter, so
+ * interpolating logarithmically between the two published ends tracks the
+ * real behaviour closely and lands on sensible values in between.
+ */
+export function maxApertureAt(lens: LensProfile, focalMm: number): number {
+  const tele = lens.maxApertureTele;
+  if (!tele || lens.maxFocal <= lens.minFocal) return lens.maxAperture;
+  const focal = Math.min(lens.maxFocal, Math.max(lens.minFocal, focalMm));
+  const t = Math.log(focal / lens.minFocal) / Math.log(lens.maxFocal / lens.minFocal);
+  return lens.maxAperture * Math.pow(tele / lens.maxAperture, t);
+}
+
+/** True when the lens's widest aperture changes across its zoom range. */
+export function isVariableAperture(lens: LensProfile): boolean {
+  return Boolean(lens.maxApertureTele && lens.maxApertureTele > lens.maxAperture);
+}
+
+export function limitsOf(cam: CameraProfile, lens: LensProfile, focalMm?: number): CameraLimits {
   return {
     minIso: cam.isoExtMin,
     maxIso: cam.isoExtMax,
     minShutter: cam.mechShutterMin,
     maxShutter: 1 / Math.max(cam.mechShutterMax, cam.eShutterMax),
-    minAperture: lens.maxAperture,
+    minAperture: focalMm === undefined ? lens.maxAperture : maxApertureAt(lens, focalMm),
     maxAperture: lens.minAperture,
   };
 }

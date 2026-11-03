@@ -43,6 +43,9 @@ export const sw: Record<TranslationKey, string> = {
   limitManualFocus: 'focus ya mkono tu', limitSlowerAf: 'focus otomatiki inaweza kuwa polepole',
   limitNoElectronic: 'hakuna udhibiti wa kielektroniki wa lenzi', limitCrop: 'picha itapunguzwa pembeni',
   limitNoStab: 'muunganiko wa utulizaji haupatikani',
+  atFocal: 'kwa',
+  kitLens: 'lenzi ya kawaida',
+  variableApertureNote: 'Zoom hii ina aperture ya juu inayobadilika: hufunguka hadi {wide}, lakini hadi {tele} tu ukikuza. Kwa hiyo kukuza hufanya picha kuwa nyeusi zaidi usiporekebisha mpangilio mwingine.',
   sensorFormat: 'Aina ya sensa', cropFactor: 'Kipimo cha crop', isoRange: 'Wigo wa ISO',
   shutterRange: 'Wigo wa shutter', lensMount: 'Aina ya kishikizo',
 

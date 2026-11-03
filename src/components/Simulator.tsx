@@ -15,7 +15,7 @@ import { FRAME_RATES, SHUTTER_ANGLES, shutterFromAngle, angleFromShutter, format
 import { scoreChallenge, type ScoreBreakdown } from '../engine/scoring';
 import { sceneById, SCENES } from '../scenes/scenes';
 import type { HistogramData } from '../scenes/renderer';
-import { sensorOf, limitsOf } from '../data/catalogue';
+import { sensorOf, limitsOf, maxApertureAt } from '../data/catalogue';
 import type { Challenge } from '../data/challenges';
 import { useStore } from '../state/store';
 import { useI18n } from '../i18n';
@@ -59,7 +59,7 @@ export function Simulator({
 
   const quality = state.prefs.quality === 'auto' ? detectDefaultQuality() : state.prefs.quality;
   const resolved = useMemo(
-    () => resolveExposure(scene.ev100, state.settings, limitsOf(camera, lens)),
+    () => resolveExposure(scene.ev100, state.settings, limitsOf(camera, lens, state.settings.focalMm)),
     [scene.ev100, state.settings, camera, lens],
   );
   const meter = meterReading(scene.ev100, {
@@ -67,6 +67,9 @@ export function Simulator({
     ndStops: resolved.ndStops, evComp: resolved.evComp,
   });
   const dof = depthOfField(resolved.focalMm, resolved.aperture, resolved.focusDistM, sensor);
+  // A kit zoom cannot open as wide once it is zoomed in, so the aperture
+  // control's range follows the focal length.
+  const widestAperture = maxApertureAt(lens, resolved.focalMm);
 
   const lockedControls = state.lockedControls;
   const allowed = useCallback(
@@ -88,7 +91,17 @@ export function Simulator({
     const stops = prevEv - curEv; // positive = brighter now
     let what = '';
     let consequence = '';
-    if (prev.aperture !== cur.aperture) {
+    if (prev.focalMm !== cur.focalMm) {
+      what = `${prev.focalMm}mm → ${cur.focalMm}mm`;
+      consequence = prev.aperture !== cur.aperture
+        // The aperture moved on its own because this zoom cannot stay as
+        // wide once it is zoomed in — the thing that puzzles every beginner
+        // with a kit lens.
+        ? `This zoom cannot open past ${formatAperture(cur.aperture)} at ${cur.focalMm}mm, so the aperture closed from ${formatAperture(prev.aperture)} by itself.`
+        : cur.focalMm > prev.focalMm
+          ? 'Narrower view, background looks closer and depth of field is shallower.'
+          : 'Wider view, more of the scene fits in and depth of field is deeper.';
+    } else if (prev.aperture !== cur.aperture) {
       what = `${formatAperture(prev.aperture)} → ${formatAperture(cur.aperture)}`;
       consequence = cur.aperture < prev.aperture
         ? 'Depth of field is shallower — more background blur.'
@@ -314,7 +327,7 @@ export function Simulator({
           <ControlWithLock name="aperture" lockedList={state.lockedControls}>
             <SliderRow
               label={t('aperture')}
-              values={APERTURES.filter((a) => a >= lens.maxAperture && a <= lens.minAperture)}
+              values={APERTURES.filter((a) => a >= widestAperture - 1e-9 && a <= lens.minAperture)}
               value={resolved.aperture}
               format={formatAperture}
               disabled={!canUse('aperture') || (!video && state.settings.mode === 'S') || (!video && state.settings.mode === 'P')}

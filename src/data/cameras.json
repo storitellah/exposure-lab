@@ -3,39 +3,1566 @@
   "updated": "2026-07-29",
   "disclaimer": "Educational approximation. Simulated noise, dynamic range, autofocus and colour do not exactly reproduce any physical camera. Tatu Exposure Lab is an independent educational tool and is not sponsored by or affiliated with any camera manufacturer named here. Names appear only as searchable text labels for educational identification.",
   "cameras": [
-    { "id": "generic", "manufacturer": "Generic", "model": "Generic Camera", "system": "Generic", "mount": "generic", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 51200, "isoExtMin": 50, "isoExtMax": 204800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["4K", "1080p"], "logProfiles": ["Generic Log"], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 1.0 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "Tatu generic profile" },
-
-    { "id": "canon-r100", "manufacturer": "Canon", "model": "EOS R100", "system": "EOS R", "mount": "rf", "sensorFormat": "APS-C", "sensorWidthMm": 22.3, "sensorHeightMm": 14.9, "cropFactor": 1.6, "resolutionMp": 24, "isoMin": 100, "isoMax": 12800, "isoExtMin": 100, "isoExtMax": 25600, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 4000, "eShutterMax": 4000, "flashSync": 250, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 12, "noise": { "cleanIso": 800, "strength": 1.2 }, "bodyStyle": "beginner", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "canon-r6ii", "manufacturer": "Canon", "model": "EOS R6 Mark II", "system": "EOS R", "mount": "rf", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 102400, "isoExtMin": 50, "isoExtMax": 204800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 16000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["4K", "1080p"], "logProfiles": ["C-Log 3"], "drBaseStops": 13.5, "noise": { "cleanIso": 3200, "strength": 0.8 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "nikon-z50ii", "manufacturer": "Nikon", "model": "Z50 II", "system": "Nikon Z", "mount": "z", "sensorFormat": "APS-C", "sensorWidthMm": 23.5, "sensorHeightMm": 15.7, "cropFactor": 1.5, "resolutionMp": 21, "isoMin": 100, "isoMax": 51200, "isoExtMin": 100, "isoExtMax": 204800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 4000, "eShutterMax": 16000, "flashSync": 200, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["4K", "1080p"], "logProfiles": ["N-Log"], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 1.0 }, "bodyStyle": "beginner", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "nikon-z8", "manufacturer": "Nikon", "model": "Z8", "system": "Nikon Z", "mount": "z", "sensorFormat": "Full frame", "sensorWidthMm": 35.9, "sensorHeightMm": 23.9, "cropFactor": 1.0, "resolutionMp": 46, "isoMin": 64, "isoMax": 25600, "isoExtMin": 32, "isoExtMax": 102400, "baseIso": 64, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["8K", "4K", "1080p"], "logProfiles": ["N-Log"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.75 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "sony-a6700", "manufacturer": "Sony", "model": "α6700", "system": "Sony E", "mount": "e", "sensorFormat": "APS-C", "sensorWidthMm": 23.3, "sensorHeightMm": 15.5, "cropFactor": 1.5, "resolutionMp": 26, "isoMin": 100, "isoMax": 32000, "isoExtMin": 50, "isoExtMax": 102400, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 4000, "eShutterMax": 8000, "flashSync": 160, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["4K", "1080p"], "logProfiles": ["S-Log3"], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 1.0 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "sony-a7iv", "manufacturer": "Sony", "model": "α7 IV", "system": "Sony E", "mount": "e", "sensorFormat": "Full frame", "sensorWidthMm": 35.9, "sensorHeightMm": 23.9, "cropFactor": 1.0, "resolutionMp": 33, "isoMin": 100, "isoMax": 51200, "isoExtMin": 50, "isoExtMax": 204800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["4K", "1080p"], "logProfiles": ["S-Log3"], "drBaseStops": 13.5, "noise": { "cleanIso": 3200, "strength": 0.8 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "fujifilm-xt5", "manufacturer": "Fujifilm", "model": "X-T5", "system": "Fujifilm X", "mount": "x", "sensorFormat": "APS-C", "sensorWidthMm": 23.5, "sensorHeightMm": 15.6, "cropFactor": 1.5, "resolutionMp": 40, "isoMin": 125, "isoMax": 12800, "isoExtMin": 64, "isoExtMax": 51200, "baseIso": 125, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 180000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["6.2K", "4K", "1080p"], "logProfiles": ["F-Log2"], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 0.95 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "fujifilm-gfx100ii", "manufacturer": "Fujifilm", "model": "GFX100 II", "system": "Fujifilm GFX", "mount": "g", "sensorFormat": "Medium format", "sensorWidthMm": 43.8, "sensorHeightMm": 32.9, "cropFactor": 0.79, "resolutionMp": 102, "isoMin": 80, "isoMax": 12800, "isoExtMin": 40, "isoExtMax": 102400, "baseIso": 80, "dualNativeIso": null, "mechShutterMin": 60, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 125, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["8K", "4K", "1080p"], "logProfiles": ["F-Log2"], "drBaseStops": 14.5, "noise": { "cleanIso": 3200, "strength": 0.7 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "panasonic-g9ii", "manufacturer": "Panasonic LUMIX", "model": "G9 II", "system": "Micro Four Thirds", "mount": "mft", "sensorFormat": "Micro Four Thirds", "sensorWidthMm": 17.3, "sensorHeightMm": 13, "cropFactor": 2.0, "resolutionMp": 25, "isoMin": 100, "isoMax": 25600, "isoExtMin": 50, "isoExtMax": 25600, "baseIso": 100, "dualNativeIso": 2000, "mechShutterMin": 60, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["5.7K", "4K", "1080p"], "logProfiles": ["V-Log"], "drBaseStops": 12.5, "noise": { "cleanIso": 800, "strength": 1.3 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "panasonic-s5iix", "manufacturer": "Panasonic LUMIX", "model": "S5 IIX", "system": "L-Mount", "mount": "l", "sensorFormat": "Full frame", "sensorWidthMm": 35.6, "sensorHeightMm": 23.8, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 51200, "isoExtMin": 50, "isoExtMax": 204800, "baseIso": 100, "dualNativeIso": 4000, "mechShutterMin": 60, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["6K", "4K", "1080p"], "logProfiles": ["V-Log"], "drBaseStops": 13.5, "noise": { "cleanIso": 3200, "strength": 0.85 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "om-om1ii", "manufacturer": "OM SYSTEM", "model": "OM-1 Mark II", "system": "Micro Four Thirds", "mount": "mft", "sensorFormat": "Micro Four Thirds", "sensorWidthMm": 17.4, "sensorHeightMm": 13, "cropFactor": 2.0, "resolutionMp": 20, "isoMin": 200, "isoMax": 25600, "isoExtMin": 80, "isoExtMax": 102400, "baseIso": 200, "dualNativeIso": null, "mechShutterMin": 60, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["4K", "1080p"], "logProfiles": ["OM-Log400"], "drBaseStops": 12.5, "noise": { "cleanIso": 800, "strength": 1.25 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "olympus-em10iv", "manufacturer": "Olympus", "model": "OM-D E-M10 Mark IV", "system": "Micro Four Thirds", "mount": "mft", "sensorFormat": "Micro Four Thirds", "sensorWidthMm": 17.4, "sensorHeightMm": 13, "cropFactor": 2.0, "resolutionMp": 20, "isoMin": 200, "isoMax": 25600, "isoExtMin": 100, "isoExtMax": 25600, "baseIso": 200, "dualNativeIso": null, "mechShutterMin": 60, "mechShutterMax": 4000, "eShutterMax": 16000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 12, "noise": { "cleanIso": 800, "strength": 1.3 }, "bodyStyle": "beginner", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "leica-sl3", "manufacturer": "Leica", "model": "SL3", "system": "L-Mount", "mount": "l", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 60, "isoMin": 100, "isoMax": 100000, "isoExtMin": 50, "isoExtMax": 100000, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 16000, "flashSync": 200, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60], "videoRes": ["8K", "4K", "1080p"], "logProfiles": ["L-Log"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.8 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "leica-m11", "manufacturer": "Leica", "model": "M11", "system": "Leica M", "mount": "m", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 60, "isoMin": 64, "isoMax": 50000, "isoExtMin": 64, "isoExtMax": 50000, "baseIso": 64, "dualNativeIso": null, "mechShutterMin": 60, "mechShutterMax": 4000, "eShutterMax": 16000, "flashSync": 180, "ibis": false, "photoModes": ["M", "A"], "videoFps": [], "videoRes": [], "logProfiles": [], "drBaseStops": 14, "noise": { "cleanIso": 1600, "strength": 0.9 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "sigma-fp-l", "manufacturer": "Sigma", "model": "fp L", "system": "L-Mount", "mount": "l", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 61, "isoMin": 100, "isoMax": 25600, "isoExtMin": 6, "isoExtMax": 102400, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 30, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 0.95 }, "bodyStyle": "enthusiast", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "hasselblad-x2d", "manufacturer": "Hasselblad", "model": "X2D 100C", "system": "Hasselblad X", "mount": "xcd", "sensorFormat": "Medium format", "sensorWidthMm": 43.8, "sensorHeightMm": 32.9, "cropFactor": 0.79, "resolutionMp": 100, "isoMin": 64, "isoMax": 25600, "isoExtMin": 64, "isoExtMax": 25600, "baseIso": 64, "dualNativeIso": null, "mechShutterMin": 4080, "mechShutterMax": 6000, "eShutterMax": 6000, "flashSync": 2000, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [], "videoRes": [], "logProfiles": [], "drBaseStops": 15, "noise": { "cleanIso": 3200, "strength": 0.65 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "phaseone-xt", "manufacturer": "Phase One", "model": "XT IQ4 150MP", "system": "Phase One XT", "mount": "phaseone-x", "sensorFormat": "Medium format 645", "sensorWidthMm": 53.4, "sensorHeightMm": 40, "cropFactor": 0.64, "resolutionMp": 151, "isoMin": 50, "isoMax": 25600, "isoExtMin": 50, "isoExtMax": 25600, "baseIso": 50, "dualNativeIso": null, "mechShutterMin": 3600, "mechShutterMax": 2500, "eShutterMax": 16000, "flashSync": 1600, "ibis": false, "photoModes": ["M", "A"], "videoFps": [], "videoRes": [], "logProfiles": [], "drBaseStops": 15, "noise": { "cleanIso": 3200, "strength": 0.6 }, "bodyStyle": "professional", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "samsung-nx500", "manufacturer": "Samsung", "model": "NX500", "system": "Samsung NX", "mount": "nx", "sensorFormat": "APS-C", "sensorWidthMm": 23.5, "sensorHeightMm": 15.7, "cropFactor": 1.5, "resolutionMp": 28, "isoMin": 100, "isoMax": 25600, "isoExtMin": 100, "isoExtMax": 51200, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 6000, "eShutterMax": 6000, "flashSync": 200, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 12.5, "noise": { "cleanIso": 800, "strength": 1.2 }, "bodyStyle": "enthusiast", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "pentax-q7", "manufacturer": "Pentax", "model": "Q7", "system": "Pentax Q", "mount": "q", "sensorFormat": "1/1.7-inch", "sensorWidthMm": 7.44, "sensorHeightMm": 5.58, "cropFactor": 4.65, "resolutionMp": 12, "isoMin": 100, "isoMax": 12800, "isoExtMin": 100, "isoExtMax": 12800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 2000, "eShutterMax": 8000, "flashSync": 250, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30], "videoRes": ["1080p"], "logProfiles": [], "drBaseStops": 10.5, "noise": { "cleanIso": 400, "strength": 1.8 }, "bodyStyle": "beginner", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "kodak-s1", "manufacturer": "Kodak", "model": "PIXPRO S-1", "system": "Micro Four Thirds", "mount": "mft", "sensorFormat": "Micro Four Thirds", "sensorWidthMm": 17.3, "sensorHeightMm": 13, "cropFactor": 2.0, "resolutionMp": 16, "isoMin": 100, "isoMax": 12800, "isoExtMin": 100, "isoExtMax": 12800, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 4000, "eShutterMax": 4000, "flashSync": 160, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 30], "videoRes": ["1080p"], "logProfiles": [], "drBaseStops": 11.5, "noise": { "cleanIso": 400, "strength": 1.5 }, "bodyStyle": "beginner", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "yi-m1", "manufacturer": "YI", "model": "M1", "system": "Micro Four Thirds", "mount": "mft", "sensorFormat": "Micro Four Thirds", "sensorWidthMm": 17.3, "sensorHeightMm": 13, "cropFactor": 2.0, "resolutionMp": 20, "isoMin": 100, "isoMax": 25600, "isoExtMin": 100, "isoExtMax": 25600, "baseIso": 100, "dualNativeIso": null, "mechShutterMin": 60, "mechShutterMax": 4000, "eShutterMax": 4000, "flashSync": 125, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 12, "noise": { "cleanIso": 640, "strength": 1.4 }, "bodyStyle": "beginner", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "zeiss-zx1", "manufacturer": "Zeiss", "model": "ZX1", "system": "Zeiss ZX", "mount": "fixed-35", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 37, "isoMin": 80, "isoMax": 51200, "isoExtMin": 80, "isoExtMax": 51200, "baseIso": 80, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 32000, "flashSync": 250, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 30], "videoRes": ["4K", "1080p"], "logProfiles": [], "drBaseStops": 13, "noise": { "cleanIso": 1600, "strength": 0.95 }, "bodyStyle": "enthusiast", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-    { "id": "ricoh-gxr", "manufacturer": "Ricoh", "model": "GXR (A12 module)", "system": "Ricoh GXR", "mount": "gxr", "sensorFormat": "APS-C", "sensorWidthMm": 23.6, "sensorHeightMm": 15.7, "cropFactor": 1.5, "resolutionMp": 12, "isoMin": 200, "isoMax": 3200, "isoExtMin": 200, "isoExtMax": 3200, "baseIso": 200, "dualNativeIso": null, "mechShutterMin": 30, "mechShutterMax": 9000, "eShutterMax": 9000, "flashSync": 180, "ibis": false, "photoModes": ["M", "A", "S", "P"], "videoFps": [24], "videoRes": ["720p"], "logProfiles": [], "drBaseStops": 11.5, "noise": { "cleanIso": 400, "strength": 1.6 }, "bodyStyle": "beginner", "releaseStatus": "legacy", "dataSource": "manufacturer specification sheet" },
-
-    { "id": "bmd-pocket6k", "manufacturer": "Blackmagic Design", "model": "Pocket Cinema Camera 6K G2", "system": "Blackmagic Cinema", "mount": "ef", "sensorFormat": "Super 35", "sensorWidthMm": 23.1, "sensorHeightMm": 12.99, "cropFactor": 1.87, "resolutionMp": 21, "isoMin": 100, "isoMax": 25600, "isoExtMin": 100, "isoExtMax": 25600, "baseIso": 400, "dualNativeIso": 3200, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": false, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["6K", "4K", "1080p"], "logProfiles": ["Blackmagic Film Gen 5"], "drBaseStops": 13, "noise": { "cleanIso": 3200, "strength": 0.9 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "red-komodo-x", "manufacturer": "RED", "model": "KOMODO-X", "system": "RED Cinema", "mount": "rf", "sensorFormat": "Super 35", "sensorWidthMm": 27.03, "sensorHeightMm": 14.26, "cropFactor": 1.55, "resolutionMp": 20, "isoMin": 250, "isoMax": 12800, "isoExtMin": 250, "isoExtMax": 12800, "baseIso": 800, "dualNativeIso": null, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": false, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["6K", "4K", "1080p"], "logProfiles": ["REDWideGamutRGB / Log3G10"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.85 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "zcam-e2f6", "manufacturer": "Z CAM", "model": "E2-F6", "system": "Z CAM Cinema", "mount": "ef", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 102400, "isoExtMin": 100, "isoExtMax": 102400, "baseIso": 400, "dualNativeIso": 2500, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": false, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["6K", "4K", "1080p"], "logProfiles": ["Z-Log2"], "drBaseStops": 13.5, "noise": { "cleanIso": 2500, "strength": 0.9 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "kinefinity-mavo-lf", "manufacturer": "Kinefinity", "model": "MAVO Edge LF", "system": "Kinefinity Cinema", "mount": "kinemount", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 51200, "isoExtMin": 100, "isoExtMax": 51200, "baseIso": 800, "dualNativeIso": 5120, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": false, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["8K", "6K", "4K"], "logProfiles": ["KineLOG3"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.85 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "dji-ronin4d", "manufacturer": "DJI", "model": "Ronin 4D-6K", "system": "DJI Cinema", "mount": "dl", "sensorFormat": "Full frame", "sensorWidthMm": 36, "sensorHeightMm": 24, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 25600, "isoExtMin": 100, "isoExtMax": 25600, "baseIso": 800, "dualNativeIso": 5000, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": true, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["6K", "4K", "1080p"], "logProfiles": ["D-Log"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.85 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "sony-fx3", "manufacturer": "Sony", "model": "FX3 (Cinema Line)", "system": "Sony Cinema Line", "mount": "e", "sensorFormat": "Full frame", "sensorWidthMm": 35.6, "sensorHeightMm": 23.8, "cropFactor": 1.0, "resolutionMp": 12, "isoMin": 80, "isoMax": 102400, "isoExtMin": 40, "isoExtMax": 409600, "baseIso": 800, "dualNativeIso": 12800, "mechShutterMin": 30, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": true, "photoModes": ["M", "A", "S", "P"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["4K", "1080p"], "logProfiles": ["S-Log3", "S-Cinetone"], "drBaseStops": 14, "noise": { "cleanIso": 6400, "strength": 0.6 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "canon-c70", "manufacturer": "Canon", "model": "EOS C70 (Cinema EOS)", "system": "Canon Cinema EOS", "mount": "rf", "sensorFormat": "Super 35", "sensorWidthMm": 26.2, "sensorHeightMm": 13.8, "cropFactor": 1.46, "resolutionMp": 9, "isoMin": 100, "isoMax": 102400, "isoExtMin": 100, "isoExtMax": 102400, "baseIso": 800, "dualNativeIso": null, "mechShutterMin": 1, "mechShutterMax": 2000, "eShutterMax": 2000, "flashSync": 0, "ibis": false, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["4K", "1080p"], "logProfiles": ["C-Log 2", "C-Log 3"], "drBaseStops": 16, "noise": { "cleanIso": 3200, "strength": 0.8 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "manufacturer specification sheet" },
-    { "id": "nikon-z-cinema-r1", "manufacturer": "Nikon", "model": "Z CINEMA R1", "system": "Nikon Z Cinema", "mount": "z", "sensorFormat": "Full frame", "sensorWidthMm": 35.9, "sensorHeightMm": 23.9, "cropFactor": 1.0, "resolutionMp": 24, "isoMin": 100, "isoMax": 51200, "isoExtMin": 100, "isoExtMax": 51200, "baseIso": 800, "dualNativeIso": 6400, "mechShutterMin": 1, "mechShutterMax": 8000, "eShutterMax": 8000, "flashSync": 0, "ibis": true, "photoModes": ["M"], "videoFps": [24, 25, 30, 50, 60, 120], "videoRes": ["8K", "4K", "1080p"], "logProfiles": ["N-Log"], "drBaseStops": 14, "noise": { "cleanIso": 3200, "strength": 0.8 }, "bodyStyle": "cinema", "releaseStatus": "current", "dataSource": "Tatu representative profile" }
+    {
+      "id": "generic",
+      "manufacturer": "Generic",
+      "model": "Generic Camera",
+      "system": "Generic",
+      "mount": "generic",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 50,
+      "isoExtMax": 204800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "Generic Log"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 1.0
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "Tatu generic profile"
+    },
+    {
+      "id": "canon-r100",
+      "manufacturer": "Canon",
+      "model": "EOS R100",
+      "system": "EOS R",
+      "mount": "rf",
+      "kitLensId": "canon-rfs18-45",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 22.3,
+      "sensorHeightMm": 14.9,
+      "cropFactor": 1.6,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 12800,
+      "isoExtMin": 100,
+      "isoExtMax": 25600,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 4000,
+      "eShutterMax": 4000,
+      "flashSync": 200,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 12,
+      "noise": {
+        "cleanIso": 800,
+        "strength": 1.2
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "canon-r6ii",
+      "manufacturer": "Canon",
+      "model": "EOS R6 Mark II",
+      "system": "EOS R",
+      "mount": "rf",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 102400,
+      "isoExtMin": 50,
+      "isoExtMax": 204800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 16000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "C-Log 3"
+      ],
+      "drBaseStops": 13.5,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.8
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "nikon-z50ii",
+      "manufacturer": "Nikon",
+      "model": "Z50 II",
+      "system": "Nikon Z",
+      "mount": "z",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.5,
+      "sensorHeightMm": 15.7,
+      "cropFactor": 1.5,
+      "resolutionMp": 21,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 100,
+      "isoExtMax": 204800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 4000,
+      "eShutterMax": 16000,
+      "flashSync": 200,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "N-Log"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 1.0
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "nikon-z8",
+      "manufacturer": "Nikon",
+      "model": "Z8",
+      "system": "Nikon Z",
+      "mount": "z",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 35.9,
+      "sensorHeightMm": 23.9,
+      "cropFactor": 1.0,
+      "resolutionMp": 46,
+      "isoMin": 64,
+      "isoMax": 25600,
+      "isoExtMin": 32,
+      "isoExtMax": 102400,
+      "baseIso": 64,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "8K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "N-Log"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.75
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "sony-a6700",
+      "manufacturer": "Sony",
+      "model": "α6700",
+      "system": "Sony E",
+      "mount": "e",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.3,
+      "sensorHeightMm": 15.5,
+      "cropFactor": 1.5,
+      "resolutionMp": 26,
+      "isoMin": 100,
+      "isoMax": 32000,
+      "isoExtMin": 50,
+      "isoExtMax": 102400,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 4000,
+      "eShutterMax": 8000,
+      "flashSync": 160,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "S-Log3"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 1.0
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "sony-a7iv",
+      "manufacturer": "Sony",
+      "model": "α7 IV",
+      "system": "Sony E",
+      "mount": "e",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 35.9,
+      "sensorHeightMm": 23.9,
+      "cropFactor": 1.0,
+      "resolutionMp": 33,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 50,
+      "isoExtMax": 204800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "S-Log3"
+      ],
+      "drBaseStops": 13.5,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.8
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "fujifilm-xt5",
+      "manufacturer": "Fujifilm",
+      "model": "X-T5",
+      "system": "Fujifilm X",
+      "mount": "x",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.5,
+      "sensorHeightMm": 15.6,
+      "cropFactor": 1.5,
+      "resolutionMp": 40,
+      "isoMin": 125,
+      "isoMax": 12800,
+      "isoExtMin": 64,
+      "isoExtMax": 51200,
+      "baseIso": 125,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 180000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "6.2K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "F-Log2"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 0.95
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "fujifilm-gfx100ii",
+      "manufacturer": "Fujifilm",
+      "model": "GFX100 II",
+      "system": "Fujifilm GFX",
+      "mount": "g",
+      "sensorFormat": "Medium format",
+      "sensorWidthMm": 43.8,
+      "sensorHeightMm": 32.9,
+      "cropFactor": 0.79,
+      "resolutionMp": 102,
+      "isoMin": 80,
+      "isoMax": 12800,
+      "isoExtMin": 40,
+      "isoExtMax": 102400,
+      "baseIso": 80,
+      "dualNativeIso": null,
+      "mechShutterMin": 60,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 125,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "8K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "F-Log2"
+      ],
+      "drBaseStops": 14.5,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.7
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "panasonic-g9ii",
+      "manufacturer": "Panasonic LUMIX",
+      "model": "G9 II",
+      "system": "Micro Four Thirds",
+      "mount": "mft",
+      "sensorFormat": "Micro Four Thirds",
+      "sensorWidthMm": 17.3,
+      "sensorHeightMm": 13,
+      "cropFactor": 2.0,
+      "resolutionMp": 25,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 50,
+      "isoExtMax": 25600,
+      "baseIso": 100,
+      "dualNativeIso": 2000,
+      "mechShutterMin": 60,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "5.7K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "V-Log"
+      ],
+      "drBaseStops": 12.5,
+      "noise": {
+        "cleanIso": 800,
+        "strength": 1.3
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "panasonic-s5iix",
+      "manufacturer": "Panasonic LUMIX",
+      "model": "S5 IIX",
+      "system": "L-Mount",
+      "mount": "l",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 35.6,
+      "sensorHeightMm": 23.8,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 50,
+      "isoExtMax": 204800,
+      "baseIso": 100,
+      "dualNativeIso": 4000,
+      "mechShutterMin": 60,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "V-Log"
+      ],
+      "drBaseStops": 13.5,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.85
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "om-om1ii",
+      "manufacturer": "OM SYSTEM",
+      "model": "OM-1 Mark II",
+      "system": "Micro Four Thirds",
+      "mount": "mft",
+      "sensorFormat": "Micro Four Thirds",
+      "sensorWidthMm": 17.4,
+      "sensorHeightMm": 13,
+      "cropFactor": 2.0,
+      "resolutionMp": 20,
+      "isoMin": 200,
+      "isoMax": 25600,
+      "isoExtMin": 80,
+      "isoExtMax": 102400,
+      "baseIso": 200,
+      "dualNativeIso": null,
+      "mechShutterMin": 60,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "OM-Log400"
+      ],
+      "drBaseStops": 12.5,
+      "noise": {
+        "cleanIso": 800,
+        "strength": 1.25
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "olympus-em10iv",
+      "manufacturer": "Olympus",
+      "model": "OM-D E-M10 Mark IV",
+      "system": "Micro Four Thirds",
+      "mount": "mft",
+      "sensorFormat": "Micro Four Thirds",
+      "sensorWidthMm": 17.4,
+      "sensorHeightMm": 13,
+      "cropFactor": 2.0,
+      "resolutionMp": 20,
+      "isoMin": 200,
+      "isoMax": 25600,
+      "isoExtMin": 100,
+      "isoExtMax": 25600,
+      "baseIso": 200,
+      "dualNativeIso": null,
+      "mechShutterMin": 60,
+      "mechShutterMax": 4000,
+      "eShutterMax": 16000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 12,
+      "noise": {
+        "cleanIso": 800,
+        "strength": 1.3
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "leica-sl3",
+      "manufacturer": "Leica",
+      "model": "SL3",
+      "system": "L-Mount",
+      "mount": "l",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 60,
+      "isoMin": 100,
+      "isoMax": 100000,
+      "isoExtMin": 50,
+      "isoExtMax": 100000,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 16000,
+      "flashSync": 200,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60
+      ],
+      "videoRes": [
+        "8K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "L-Log"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.8
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "leica-m11",
+      "manufacturer": "Leica",
+      "model": "M11",
+      "system": "Leica M",
+      "mount": "m",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 60,
+      "isoMin": 64,
+      "isoMax": 50000,
+      "isoExtMin": 64,
+      "isoExtMax": 50000,
+      "baseIso": 64,
+      "dualNativeIso": null,
+      "mechShutterMin": 60,
+      "mechShutterMax": 4000,
+      "eShutterMax": 16000,
+      "flashSync": 180,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A"
+      ],
+      "videoFps": [],
+      "videoRes": [],
+      "logProfiles": [],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 0.9
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "sigma-fp-l",
+      "manufacturer": "Sigma",
+      "model": "fp L",
+      "system": "L-Mount",
+      "mount": "l",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 61,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 6,
+      "isoExtMax": 102400,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 30,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 0.95
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "hasselblad-x2d",
+      "manufacturer": "Hasselblad",
+      "model": "X2D 100C",
+      "system": "Hasselblad X",
+      "mount": "xcd",
+      "sensorFormat": "Medium format",
+      "sensorWidthMm": 43.8,
+      "sensorHeightMm": 32.9,
+      "cropFactor": 0.79,
+      "resolutionMp": 100,
+      "isoMin": 64,
+      "isoMax": 25600,
+      "isoExtMin": 64,
+      "isoExtMax": 25600,
+      "baseIso": 64,
+      "dualNativeIso": null,
+      "mechShutterMin": 4080,
+      "mechShutterMax": 6000,
+      "eShutterMax": 6000,
+      "flashSync": 2000,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [],
+      "videoRes": [],
+      "logProfiles": [],
+      "drBaseStops": 15,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.65
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "phaseone-xt",
+      "manufacturer": "Phase One",
+      "model": "XT IQ4 150MP",
+      "system": "Phase One XT",
+      "mount": "phaseone-x",
+      "sensorFormat": "Medium format 645",
+      "sensorWidthMm": 53.4,
+      "sensorHeightMm": 40,
+      "cropFactor": 0.64,
+      "resolutionMp": 151,
+      "isoMin": 50,
+      "isoMax": 25600,
+      "isoExtMin": 50,
+      "isoExtMax": 25600,
+      "baseIso": 50,
+      "dualNativeIso": null,
+      "mechShutterMin": 3600,
+      "mechShutterMax": 2500,
+      "eShutterMax": 16000,
+      "flashSync": 1600,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A"
+      ],
+      "videoFps": [],
+      "videoRes": [],
+      "logProfiles": [],
+      "drBaseStops": 15,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.6
+      },
+      "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "samsung-nx500",
+      "manufacturer": "Samsung",
+      "model": "NX500",
+      "system": "Samsung NX",
+      "mount": "nx",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.5,
+      "sensorHeightMm": 15.7,
+      "cropFactor": 1.5,
+      "resolutionMp": 28,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 100,
+      "isoExtMax": 51200,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 6000,
+      "eShutterMax": 6000,
+      "flashSync": 200,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 12.5,
+      "noise": {
+        "cleanIso": 800,
+        "strength": 1.2
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "pentax-q7",
+      "manufacturer": "Pentax",
+      "model": "Q7",
+      "system": "Pentax Q",
+      "mount": "q",
+      "sensorFormat": "1/1.7-inch",
+      "sensorWidthMm": 7.44,
+      "sensorHeightMm": 5.58,
+      "cropFactor": 4.65,
+      "resolutionMp": 12,
+      "isoMin": 100,
+      "isoMax": 12800,
+      "isoExtMin": 100,
+      "isoExtMax": 12800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 2000,
+      "eShutterMax": 8000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30
+      ],
+      "videoRes": [
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 10.5,
+      "noise": {
+        "cleanIso": 400,
+        "strength": 1.8
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "kodak-s1",
+      "manufacturer": "Kodak",
+      "model": "PIXPRO S-1",
+      "system": "Micro Four Thirds",
+      "mount": "mft",
+      "sensorFormat": "Micro Four Thirds",
+      "sensorWidthMm": 17.3,
+      "sensorHeightMm": 13,
+      "cropFactor": 2.0,
+      "resolutionMp": 16,
+      "isoMin": 100,
+      "isoMax": 12800,
+      "isoExtMin": 100,
+      "isoExtMax": 12800,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 4000,
+      "eShutterMax": 4000,
+      "flashSync": 160,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        30
+      ],
+      "videoRes": [
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 11.5,
+      "noise": {
+        "cleanIso": 400,
+        "strength": 1.5
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "yi-m1",
+      "manufacturer": "YI",
+      "model": "M1",
+      "system": "Micro Four Thirds",
+      "mount": "mft",
+      "sensorFormat": "Micro Four Thirds",
+      "sensorWidthMm": 17.3,
+      "sensorHeightMm": 13,
+      "cropFactor": 2.0,
+      "resolutionMp": 20,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 100,
+      "isoExtMax": 25600,
+      "baseIso": 100,
+      "dualNativeIso": null,
+      "mechShutterMin": 60,
+      "mechShutterMax": 4000,
+      "eShutterMax": 4000,
+      "flashSync": 125,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        30
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 12,
+      "noise": {
+        "cleanIso": 640,
+        "strength": 1.4
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "zeiss-zx1",
+      "manufacturer": "Zeiss",
+      "model": "ZX1",
+      "system": "Zeiss ZX",
+      "mount": "fixed-35",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 37,
+      "isoMin": 80,
+      "isoMax": 51200,
+      "isoExtMin": 80,
+      "isoExtMax": 51200,
+      "baseIso": 80,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        30
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 0.95
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "ricoh-gxr",
+      "manufacturer": "Ricoh",
+      "model": "GXR (A12 module)",
+      "system": "Ricoh GXR",
+      "mount": "gxr",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.6,
+      "sensorHeightMm": 15.7,
+      "cropFactor": 1.5,
+      "resolutionMp": 12,
+      "isoMin": 200,
+      "isoMax": 3200,
+      "isoExtMin": 200,
+      "isoExtMax": 3200,
+      "baseIso": 200,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 9000,
+      "eShutterMax": 9000,
+      "flashSync": 180,
+      "ibis": false,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24
+      ],
+      "videoRes": [
+        "720p"
+      ],
+      "logProfiles": [],
+      "drBaseStops": 11.5,
+      "noise": {
+        "cleanIso": 400,
+        "strength": 1.6
+      },
+      "bodyStyle": "beginner",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "bmd-pocket6k",
+      "manufacturer": "Blackmagic Design",
+      "model": "Pocket Cinema Camera 6K G2",
+      "system": "Blackmagic Cinema",
+      "mount": "ef",
+      "sensorFormat": "Super 35",
+      "sensorWidthMm": 23.1,
+      "sensorHeightMm": 12.99,
+      "cropFactor": 1.87,
+      "resolutionMp": 21,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 100,
+      "isoExtMax": 25600,
+      "baseIso": 400,
+      "dualNativeIso": 3200,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": false,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "Blackmagic Film Gen 5"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.9
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "red-komodo-x",
+      "manufacturer": "RED",
+      "model": "KOMODO-X",
+      "system": "RED Cinema",
+      "mount": "rf",
+      "sensorFormat": "Super 35",
+      "sensorWidthMm": 27.03,
+      "sensorHeightMm": 14.26,
+      "cropFactor": 1.55,
+      "resolutionMp": 20,
+      "isoMin": 250,
+      "isoMax": 12800,
+      "isoExtMin": 250,
+      "isoExtMax": 12800,
+      "baseIso": 800,
+      "dualNativeIso": null,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": false,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "REDWideGamutRGB / Log3G10"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.85
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "zcam-e2f6",
+      "manufacturer": "Z CAM",
+      "model": "E2-F6",
+      "system": "Z CAM Cinema",
+      "mount": "ef",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 102400,
+      "isoExtMin": 100,
+      "isoExtMax": 102400,
+      "baseIso": 400,
+      "dualNativeIso": 2500,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": false,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "Z-Log2"
+      ],
+      "drBaseStops": 13.5,
+      "noise": {
+        "cleanIso": 2500,
+        "strength": 0.9
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "kinefinity-mavo-lf",
+      "manufacturer": "Kinefinity",
+      "model": "MAVO Edge LF",
+      "system": "Kinefinity Cinema",
+      "mount": "kinemount",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 100,
+      "isoExtMax": 51200,
+      "baseIso": 800,
+      "dualNativeIso": 5120,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": false,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "8K",
+        "6K",
+        "4K"
+      ],
+      "logProfiles": [
+        "KineLOG3"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.85
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "dji-ronin4d",
+      "manufacturer": "DJI",
+      "model": "Ronin 4D-6K",
+      "system": "DJI Cinema",
+      "mount": "dl",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 36,
+      "sensorHeightMm": 24,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 25600,
+      "isoExtMin": 100,
+      "isoExtMax": 25600,
+      "baseIso": 800,
+      "dualNativeIso": 5000,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": true,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "D-Log"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.85
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "sony-fx3",
+      "manufacturer": "Sony",
+      "model": "FX3 (Cinema Line)",
+      "system": "Sony Cinema Line",
+      "mount": "e",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 35.6,
+      "sensorHeightMm": 23.8,
+      "cropFactor": 1.0,
+      "resolutionMp": 12,
+      "isoMin": 80,
+      "isoMax": 102400,
+      "isoExtMin": 40,
+      "isoExtMax": 409600,
+      "baseIso": 800,
+      "dualNativeIso": 12800,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "S-Log3",
+        "S-Cinetone"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 6400,
+        "strength": 0.6
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "canon-c70",
+      "manufacturer": "Canon",
+      "model": "EOS C70 (Cinema EOS)",
+      "system": "Canon Cinema EOS",
+      "mount": "rf",
+      "sensorFormat": "Super 35",
+      "sensorWidthMm": 26.2,
+      "sensorHeightMm": 13.8,
+      "cropFactor": 1.46,
+      "resolutionMp": 9,
+      "isoMin": 100,
+      "isoMax": 102400,
+      "isoExtMin": 100,
+      "isoExtMax": 102400,
+      "baseIso": 800,
+      "dualNativeIso": null,
+      "mechShutterMin": 1,
+      "mechShutterMax": 2000,
+      "eShutterMax": 2000,
+      "flashSync": 0,
+      "ibis": false,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "C-Log 2",
+        "C-Log 3"
+      ],
+      "drBaseStops": 16,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.8
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "nikon-z-cinema-r1",
+      "manufacturer": "Nikon",
+      "model": "Z CINEMA R1",
+      "system": "Nikon Z Cinema",
+      "mount": "z",
+      "sensorFormat": "Full frame",
+      "sensorWidthMm": 35.9,
+      "sensorHeightMm": 23.9,
+      "cropFactor": 1.0,
+      "resolutionMp": 24,
+      "isoMin": 100,
+      "isoMax": 51200,
+      "isoExtMin": 100,
+      "isoExtMax": 51200,
+      "baseIso": 800,
+      "dualNativeIso": 6400,
+      "mechShutterMin": 1,
+      "mechShutterMax": 8000,
+      "eShutterMax": 8000,
+      "flashSync": 0,
+      "ibis": true,
+      "photoModes": [
+        "M"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "8K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "N-Log"
+      ],
+      "drBaseStops": 14,
+      "noise": {
+        "cleanIso": 3200,
+        "strength": 0.8
+      },
+      "bodyStyle": "cinema",
+      "releaseStatus": "current",
+      "dataSource": "Tatu representative profile"
+    }
   ]
 }

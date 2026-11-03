@@ -3,7 +3,11 @@
  * Incompatible pairs cannot be selected; adapted pairs explain limitations.
  */
 import { useMemo, useState } from 'react';
-import { CAMERAS, checkCompatibility, lensById, compatibleLenses, gearLabel, CATALOGUE_DISCLAIMER } from '../data/catalogue';
+import {
+  CAMERAS, checkCompatibility, lensById, compatibleLenses, gearLabel,
+  isVariableAperture, CATALOGUE_DISCLAIMER,
+} from '../data/catalogue';
+import { formatAperture } from '../engine/settings';
 import { useStore } from '../state/store';
 import { useI18n } from '../i18n';
 
@@ -89,6 +93,7 @@ export function GearPicker() {
         {lensOptions.map(({ lens: l, compat: cp }) => (
           <option key={l.id} value={l.id} disabled={cp.status === 'incompatible'}>
             {gearLabel(l)}
+            {l.id === camera.kitLensId ? ` — ${t('kitLens')}` : ''}
             {cp.status === 'incompatible' ? ` — ${t('incompatible')}` : cp.status === 'adapter' ? ` — ${t('viaAdapter')}` : ''}
           </option>
         ))}
@@ -100,6 +105,13 @@ export function GearPicker() {
           {compat.adapter.limitations.length > 0 && (
             <> — {compat.adapter.limitations.map((l) => t(LIMIT_KEYS[l])).join(', ')}</>
           )}
+        </p>
+      )}
+      {isVariableAperture(lens) && (
+        <p className="notice" role="status" data-testid="variable-aperture-note">
+          {t('variableApertureNote')
+            .replace('{wide}', `${formatAperture(lens.maxAperture)} ${t('atFocal')} ${lens.minFocal}mm`)
+            .replace('{tele}', `${formatAperture(lens.maxApertureTele ?? lens.maxAperture)} ${t('atFocal')} ${lens.maxFocal}mm`)}
         </p>
       )}
       {compat.status === 'native' && (

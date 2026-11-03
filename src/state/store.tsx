@@ -6,9 +6,9 @@
 import {
   createContext, useCallback, useContext, useEffect, useMemo, useReducer, type ReactNode,
 } from 'react';
-import { defaultSettings, type ExposureSettings } from '../engine/settings';
+import { APERTURES, defaultSettings, type ExposureSettings } from '../engine/settings';
 import {
-  cameraById, lensById, type CameraProfile, type LensProfile, checkCompatibility,
+  cameraById, lensById, type CameraProfile, type LensProfile, checkCompatibility, maxApertureAt,
 } from '../data/catalogue';
 import {
   DEFAULT_PREFS, loadPrefs, savePrefs, type Prefs,
@@ -48,8 +48,15 @@ const HISTORY_LIMIT = 50;
 
 function clampToGear(s: ExposureSettings, cam: CameraProfile, lens: LensProfile): ExposureSettings {
   const out = { ...s };
-  out.aperture = Math.min(lens.minAperture, Math.max(lens.maxAperture, out.aperture));
   out.focalMm = Math.min(lens.maxFocal, Math.max(lens.minFocal, out.focalMm));
+  // On a kit zoom the widest aperture narrows as you zoom in, so the limit
+  // depends on the focal length we just settled on. Snap up to a real
+  // third-stop value: a lens reports f/5.6, never f/5.43.
+  const widest = maxApertureAt(lens, out.focalMm);
+  if (out.aperture < widest - 1e-9) {
+    out.aperture = APERTURES.find((a) => a >= widest - 1e-9) ?? widest;
+  }
+  out.aperture = Math.min(lens.minAperture, out.aperture);
   out.focusDistM = Math.max(lens.minFocusM, out.focusDistM);
   out.iso = Math.min(cam.isoExtMax, Math.max(cam.isoExtMin, out.iso));
   const shortest = 1 / Math.max(cam.mechShutterMax, cam.eShutterMax);
@@ -100,8 +107,11 @@ function reducer(state: AppState, action: Action): AppState {
     case 'set-camera': {
       const cam = cameraById(action.id);
       let lensId = state.lensId;
-      const compat = checkCompatibility(lensById(lensId), cam);
-      if (compat.status === 'incompatible') lensId = 'generic-50';
+      // Switching body: keep the current lens when it fits, otherwise reach
+      // for the lens this body ships with before falling back to a generic.
+      if (checkCompatibility(lensById(lensId), cam).status === 'incompatible') {
+        lensId = cam.kitLensId ?? 'generic-50';
+      }
       const lens = lensById(lensId);
       return { ...state, cameraId: cam.id, lensId, settings: clampToGear(state.settings, cam, lens) };
     }
