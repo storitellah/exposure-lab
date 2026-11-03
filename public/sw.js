@@ -7,7 +7,7 @@
  *   never trapped on an obsolete version.
  * - Blob/data URLs, POSTs and cross-origin requests are never touched.
  */
-const VERSION = 'v1.0.0';
+const VERSION = 'v1.1.0';
 const CACHE_NAME = `tatu-lab-${VERSION}`;
 const SHELL = ['/', '/manifest.webmanifest', '/icons/favicon.svg', '/icons/icon-192.png', '/icons/icon-512.png'];
 
