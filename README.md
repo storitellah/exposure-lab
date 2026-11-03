@@ -200,6 +200,37 @@ drawing primitives in `src/scenes/primitives.ts`. Layers are ordered
 back-to-front; each declares its distance (for depth-of-field blur), speed
 (for motion blur/trails) and whether it emits light.
 
+#### Photographic scenes
+
+A scene can also carry a `photo` version that replaces the drawing once its
+images have loaded (the drawing shows meanwhile, and stays if a file fails):
+
+1. Generate a photo with **everything sharp and nothing motion-blurred** — the
+   simulator adds depth of field, motion blur and noise itself. Prompts and
+   starting depth plans for ten scenes are in `scripts/photo-scenes.json`.
+2. Make a full-frame cut-out of each subject (any background remover that
+   keeps the original size).
+3. Run `scripts/prepare-photo-scene.sh <scene-id> photo.png cutout.png …`.
+   It crops to 16:10, writes `public/scenes/<id>/cutout-N.webp`, and writes
+   `plate.webp`: the photo with the subjects removed and the gap filled.
+4. Add to the scene in `src/scenes/scenes.ts`:
+
+   ```ts
+   photo: {
+     plate: '/scenes/street/plate.webp',
+     // Far at the top to near at the bottom, so the ground blurs as it recedes.
+     bands: [{ fromY: 0, distanceM: 2000 }, { fromY: 0.4, distanceM: 60 }, { fromY: 0.7, distanceM: 15 }],
+     cutouts: [{ src: '/scenes/street/cutout-1.webp', distanceM: 6, speed: { x: 90, y: 0 } }],
+   },
+   ```
+
+   Use the same distances and speeds as the drawn subject so lessons and
+   challenges score identically. `plateLights: true` lets bright lamps in the
+   plate streak with camera shake. A unit test checks every listed file exists.
+
+Photo files are cached by the service worker the first time a scene is
+opened, so they also work offline afterwards.
+
 ### Lessons & challenges
 
 `src/data/lessons.ts` and `src/data/challenges.ts` — bilingual content plus a

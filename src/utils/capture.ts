@@ -4,6 +4,7 @@
  * contain no EXIF, GPS or personal metadata (canvas encoding strips all).
  */
 import { renderScene, type RenderOptions } from '../scenes/renderer';
+import { loadScenePhotos } from '../scenes/photos';
 import { saveShot, type StoredShot } from '../state/db';
 import type { ExposureSettings } from '../engine/settings';
 import type { ScoreBreakdown } from '../engine/scoring';
@@ -22,6 +23,9 @@ export interface CaptureResult {
 
 /** Render at high quality with a fixed seed so the capture is reproducible. */
 export async function captureScene(options: Omit<RenderOptions, 'quality' | 'seed'>): Promise<CaptureResult> {
+  // Normally already loaded by the viewfinder; this makes sure a capture
+  // never falls back to the drawing while the photos are still arriving.
+  await loadScenePhotos(options.scene);
   const canvas = document.createElement('canvas');
   renderScene(canvas, { ...options, quality: 'high', seed: 7 });
 

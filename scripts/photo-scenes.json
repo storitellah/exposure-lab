@@ -1,0 +1,71 @@
+{
+  "about": "Prompts and layer plans for the photographic scenes. Every photo is generated with everything sharp and nothing moving-blurred: the simulator adds depth of field, motion blur and noise itself. 'cutouts' names what to isolate with a background remover; 'bands' are starting depth values for the plate (fromY = share of frame height from the top, distance in metres) to refine once the photo is seen.",
+  "style": "Realistic documentary photograph, eye-level, horizontal, natural colours, balanced exposure with no blown highlights. Deep depth of field: everything in sharp focus from foreground to horizon, no background blur, no bokeh, no vignette, no motion blur, motion frozen. No text, no logos, no watermark.",
+  "model": "z_image",
+  "aspect_ratio": "16:9",
+  "scenes": [
+    {
+      "id": "outdoor-portrait",
+      "prompt": "A young East African woman in a mustard-yellow t-shirt and dark jeans stands in a sunny public park, centred, facing the camera with a relaxed smile, framed head to mid-thigh, about 2.5 metres away. Behind her green lawn, leafy and acacia trees at different distances, soft hills on the horizon, clear blue sky. Bright midday sun.",
+      "cutouts": ["the woman"],
+      "bands": [[0, 4000], [0.5, 60], [0.72, 12], [0.9, 4]]
+    },
+    {
+      "id": "window-portrait",
+      "prompt": "Indoors: a young East African man in a cream shirt sits on a stool, framed head to waist, slightly left of centre, about 1.8 metres away, lit softly from a large window on the right side of the frame. Plain warm-toned living room wall behind, a plant and a shelf about 3 metres back.",
+      "cutouts": ["the man"],
+      "bands": [[0, 4], [0.75, 3]]
+    },
+    {
+      "id": "street",
+      "prompt": "A busy town street in East Africa in daylight. A woman in a red top walks briskly from left to right along the pavement, side-on, full body, centre-left of frame, about 6 metres away. Shopfronts, colourful signs without readable text, and a few distant pedestrians behind her. Overcast-bright light.",
+      "cutouts": ["the walking woman"],
+      "bands": [[0, 2000], [0.4, 60], [0.7, 15], [0.88, 7]]
+    },
+    {
+      "id": "football",
+      "prompt": "A youth football match on a grass pitch in bright sun. A player in a yellow shirt sprints from left to right with the ball at his feet, side-on, full body, centre of frame, about 12 metres away. Two other players further away, a goal and spectators at the far side of the pitch, blue sky.",
+      "cutouts": ["the sprinting player with the ball"],
+      "bands": [[0, 3000], [0.45, 120], [0.7, 30], [0.88, 14]]
+    },
+    {
+      "id": "cyclist",
+      "prompt": "A cyclist in a blue jersey rides a road bicycle from left to right along a rural tarmac road in warm late-afternoon light, side-on, rider and whole bicycle in frame, centred, about 8 metres away. Dry grassland and low hills behind under a golden sky.",
+      "cutouts": ["the cyclist and bicycle"],
+      "bands": [[0, 2000], [0.55, 100], [0.75, 20], [0.9, 9]]
+    },
+    {
+      "id": "landscape",
+      "prompt": "A wide green valley landscape in clear midday light: a lone acacia tree in the middle distance on the right, a dirt track winding away, layered hills fading to distant blue mountains, clear sky with a few small clouds. No people.",
+      "cutouts": [],
+      "bands": [[0, 10000], [0.42, 3000], [0.55, 400], [0.7, 60], [0.88, 8]]
+    },
+    {
+      "id": "night-street",
+      "prompt": "A town street at night, lit by warm streetlamps and glowing shop windows. A man in a light grey jacket walks slowly along the pavement in the centre of the frame, full body, about 10 metres away. Dark blue sky, buildings on both sides, wet tarmac reflecting the lights. Properly exposed night scene, lamps bright but not flaring.",
+      "cutouts": ["the walking man"],
+      "bands": [[0, 2000], [0.45, 80], [0.72, 20], [0.9, 10]],
+      "plateLights": true
+    },
+    {
+      "id": "backlit",
+      "prompt": "Golden hour on open savannah grassland: a young East African woman stands centred and facing the camera, framed head to knees, about 3 metres away, with the low sun directly behind her shoulder creating a bright rim of light around her hair. Warm hazy sky, distant acacia trees on the horizon.",
+      "cutouts": ["the woman"],
+      "bands": [[0, 9000], [0.62, 600], [0.82, 10]],
+      "plateLights": true
+    },
+    {
+      "id": "low-light-interior",
+      "prompt": "A dim, cosy living room in the evening lit only by a single warm pendant lamp hanging upper right. A young East African man in a plum jumper stands left of centre, framed head to thigh, about 2.5 metres away, gently lit by the lamp. Dark wooden furniture and a bookshelf in the background about 4 to 6 metres away.",
+      "cutouts": ["the man"],
+      "bands": [[0, 6], [0.78, 4]],
+      "plateLights": true
+    },
+    {
+      "id": "waterfall",
+      "prompt": "A tall waterfall in a green forest gorge, the falling water in the centre of the frame about 20 metres away, splashing into a rocky pool in the foreground. Mossy rocks and trees on both sides, bright overcast light. The water is frozen in mid-air as crisp droplets and strands, as with a very fast shutter.",
+      "cutouts": ["the falling water (mask by brightness inside the falls)"],
+      "bands": [[0, 1000], [0.35, 60], [0.82, 12]]
+    }
+  ]
+}

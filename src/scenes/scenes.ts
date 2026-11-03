@@ -22,6 +22,29 @@ export interface SceneLayer {
   draw: (ctx: Ctx) => void;
 }
 
+/** A cut-out element of a photographed scene (full frame, transparent around it). */
+export interface PhotoCutout {
+  src: string;
+  distanceM: number;
+  speed: { x: number; y: number };
+  lights?: boolean;
+}
+
+/**
+ * Photographic version of a scene. The plate is the photo with its moving or
+ * in-focus subjects removed and the gap filled; it is split into horizontal
+ * depth bands so the ground blurs progressively as it recedes. Cut-outs are
+ * drawn in front, far to near. Paths are relative to the site root.
+ */
+export interface PhotoScene {
+  plate: string;
+  /** Top to bottom. The first band must start at 0 and is the farthest. */
+  bands: { fromY: number; distanceM: number }[];
+  /** The plate holds bright light sources that streak with camera shake. */
+  plateLights?: boolean;
+  cutouts: PhotoCutout[];
+}
+
 export interface SceneDef {
   id: string;
   en: string;
@@ -38,7 +61,10 @@ export interface SceneDef {
   start: { aperture: number; shutter: number };
   /** True for scenes intended for the video simulator too. */
   video?: boolean;
+  /** Drawn layers: always available, and the fallback while photos load. */
   layers: SceneLayer[];
+  /** Optional photographic layers that replace `layers` once loaded. */
+  photo?: PhotoScene;
 }
 
 const SKIN = { deep: '#5C3A21', dark: '#8D5524', medium: '#C68642', tan: '#E0AC69', light: '#F1C27D' };

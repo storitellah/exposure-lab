@@ -3,7 +3,8 @@
  * settings, computes the histogram, and supports touch-to-focus.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { renderScene, computeHistogram, invalidateSceneCache, type HistogramData, type Quality } from '../scenes/renderer';
+import { renderScene, computeHistogram, invalidateSceneCache, activeLayers, type HistogramData, type Quality } from '../scenes/renderer';
+import { loadScenePhotos, photoReady } from '../scenes/photos';
 import { sceneById } from '../scenes/scenes';
 import type { ExposureSettings } from '../engine/settings';
 import type { SensorFormat } from '../engine/optics';
@@ -29,6 +30,18 @@ export function SceneCanvas(props: SceneCanvasProps) {
   const { onHistogram } = props;
 
   useEffect(() => () => invalidateSceneCache(), [props.sceneId]);
+
+  // Photographic scenes: draw the illustrated version straight away, then
+  // swap to the photos as soon as they have loaded.
+  const [photosLoaded, setPhotosLoaded] = useState(0);
+  useEffect(() => {
+    if (!scene.photo || photoReady(scene)) return;
+    let alive = true;
+    void loadScenePhotos(scene).then((ok) => {
+      if (alive && ok) setPhotosLoaded((n) => n + 1);
+    });
+    return () => { alive = false; };
+  }, [scene]);
 
   /*
    * Rendering is scheduled on an animation frame rather than run inline.
@@ -59,7 +72,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
       cancelAnimationFrame(frame);
       if (histTimer.current !== null) window.clearTimeout(histTimer.current);
     };
-  }, [scene, props.settings, props.sensor, props.noiseProfile, props.quality, props.vignetting, onHistogram]);
+  }, [scene, photosLoaded, props.settings, props.sensor, props.noiseProfile, props.quality, props.vignetting, onHistogram]);
 
   const handleTap = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
@@ -69,8 +82,9 @@ export function SceneCanvas(props: SceneCanvasProps) {
     const y = (clientY - rect.top) / rect.height;
     // Estimate the tapped layer's distance: nearest layer whose vertical band
     // matches; fall back to the subject distance.
-    const est = y > 0.65 ? Math.min(...scene.layers.map((l) => l.distanceM))
-      : y < 0.3 ? Math.max(...scene.layers.map((l) => l.distanceM))
+    const distances = activeLayers(scene).layers.map((l) => l.distanceM);
+    const est = y > 0.65 ? Math.min(...distances)
+      : y < 0.3 ? Math.max(...distances)
         : scene.subjectDistM;
     props.onFocusTap(x, y, est);
     setFocusVisible(true);
@@ -81,6 +95,7 @@ export function SceneCanvas(props: SceneCanvasProps) {
     <div className="viewfinder">
       <canvas
         ref={canvasRef}
+        data-photo={photoReady(scene) ? 'true' : 'false'}
         role="img"
         aria-label={props.ariaLabel}
         onClick={(e) => handleTap(e.clientX, e.clientY)}

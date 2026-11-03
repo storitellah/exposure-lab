@@ -11,6 +11,19 @@ copies, dial designs or trade dress are used.
 
 © Storitellah. Redistribution permitted with the application.
 
+### Photographic scenes
+
+Scenes may also ship photographic layers in `public/scenes/<scene-id>/`.
+These are AI-generated images (prompts in `scripts/photo-scenes.json`), not
+photographs of real people or places, prepared with
+`scripts/prepare-photo-scene.sh`. Before publishing, confirm that the
+generator account's terms grant the rights needed to distribute them with
+the app. Record each scene's generator and date here when adding it:
+
+| Scene | Generator | Date |
+|---|---|---|
+| — | — | — |
+
 ## Fonts (self-hosted, no CDN)
 
 | Font | Licence | Source |

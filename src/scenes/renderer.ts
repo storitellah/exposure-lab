@@ -8,7 +8,8 @@
  * downscale/upscale approximation as a fallback for browsers without it.
  */
 import { REF_W, REF_H } from './primitives';
-import type { SceneDef } from './scenes';
+import type { SceneDef, SceneLayer } from './scenes';
+import { photoLayers } from './photos';
 import { brightnessMultiplier, stopsFromCorrect } from '../engine/exposure';
 import { blurCircleMm, diffractionSoftness, shakeAmount, type SensorFormat } from '../engine/optics';
 import { noiseAmount, colourNoiseAmount, detailRetention } from '../engine/noise';
@@ -30,7 +31,7 @@ export interface RenderOptions {
 
 const QUALITY_W: Record<Quality, number> = { low: 480, medium: 800, high: 1200 };
 
-interface LayerCache { canvases: HTMLCanvasElement[]; sceneId: string; width: number }
+interface LayerCache { canvases: HTMLCanvasElement[]; key: string; width: number }
 let cache: LayerCache | null = null;
 
 const supportsFilter = (() => {
@@ -39,11 +40,18 @@ const supportsFilter = (() => {
   return !!c && 'filter' in c;
 })();
 
-function layerCanvases(scene: SceneDef, width: number): HTMLCanvasElement[] {
-  if (cache && cache.sceneId === scene.id && cache.width === width) return cache.canvases;
+/** The layers to draw: the scene's photos once loaded, otherwise its drawing. */
+export function activeLayers(scene: SceneDef): { layers: SceneLayer[]; photo: boolean } {
+  const photo = photoLayers(scene);
+  return photo ? { layers: photo, photo: true } : { layers: scene.layers, photo: false };
+}
+
+function layerCanvases(scene: SceneDef, layers: SceneLayer[], photo: boolean, width: number): HTMLCanvasElement[] {
+  const key = `${scene.id}:${photo ? 'photo' : 'drawn'}`;
+  if (cache && cache.key === key && cache.width === width) return cache.canvases;
   blurCache = []; // base layers changed, so any blurred copies are stale
   const height = Math.round((width * REF_H) / REF_W);
-  const canvases = scene.layers.map((layer) => {
+  const canvases = layers.map((layer) => {
     const c = document.createElement('canvas');
     c.width = width;
     c.height = height;
@@ -54,7 +62,7 @@ function layerCanvases(scene: SceneDef, width: number): HTMLCanvasElement[] {
     }
     return c;
   });
-  cache = { canvases, sceneId: scene.id, width };
+  cache = { canvases, key, width };
   return canvases;
 }
 
@@ -68,7 +76,37 @@ function layerCanvases(scene: SceneDef, width: number): HTMLCanvasElement[] {
  * serves as the fallback where `ctx.filter` is unavailable, since the
  * downscale/upscale alone approximates the same softening.
  */
-function renderBlur(src: HTMLCanvasElement, radius: number): HTMLCanvasElement {
+function renderBlur(input: HTMLCanvasElement, radius: number, padEdges = false): HTMLCanvasElement {
+  // An opaque, full-frame layer would otherwise blur towards transparent at
+  // the frame edges. Extend it with a stretched copy of itself first and
+  // crop back afterwards, so the edges stay solid.
+  let src = input;
+  const pad = padEdges ? Math.ceil(radius * 2) : 0;
+  if (pad > 0) {
+    const padded = document.createElement('canvas');
+    padded.width = input.width + pad * 2;
+    padded.height = input.height + pad * 2;
+    const pctx = padded.getContext('2d');
+    if (pctx) {
+      pctx.drawImage(input, 0, 0, padded.width, padded.height);
+      pctx.drawImage(input, pad, pad);
+      src = padded;
+    }
+  }
+  const blurred = blurCanvas(src, radius);
+  if (src === input) return blurred;
+  const out = document.createElement('canvas');
+  out.width = input.width;
+  out.height = input.height;
+  const octx = out.getContext('2d');
+  if (!octx) return blurred;
+  const sx = (blurred.width - input.width) / 2;
+  const sy = (blurred.height - input.height) / 2;
+  octx.drawImage(blurred, sx, sy, input.width, input.height, 0, 0, input.width, input.height);
+  return out;
+}
+
+function blurCanvas(src: HTMLCanvasElement, radius: number): HTMLCanvasElement {
   const downscale = radius > 6 ? Math.min(5, radius / 3) : 1;
   const w = Math.max(8, Math.round(src.width / downscale));
   const h = Math.max(8, Math.round(src.height / downscale));
@@ -104,12 +142,13 @@ interface BlurEntry { bucket: number; canvas: HTMLCanvasElement }
 let blurCache: (BlurEntry | undefined)[] = [];
 
 function blurredLayer(index: number, src: HTMLCanvasElement, blurPx: number): HTMLCanvasElement {
+  // The backmost layer always fills the frame, so pad its edges when blurring.
   if (blurPx < 0.6) return src;
   // Half-pixel buckets: finer steps are invisible but would thrash the cache.
   const bucket = Math.round(blurPx * 2) / 2;
   const hit = blurCache[index];
   if (hit && hit.bucket === bucket && hit.canvas.width === src.width) return hit.canvas;
-  const canvas = renderBlur(src, bucket);
+  const canvas = renderBlur(src, bucket, index === 0);
   blurCache[index] = { bucket, canvas };
   return canvas;
 }
@@ -165,7 +204,8 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
   const bright = brightnessMultiplier(Math.max(-6, Math.min(6, stopsOff)));
   const scale = width / REF_W;
 
-  const layers = layerCanvases(o.scene, width);
+  const active = activeLayers(o.scene);
+  const layers = layerCanvases(o.scene, active.layers, active.photo, width);
   const shake = shakeAmount(s.shutter, s.focalMm, o.sensor, s.stabilisation);
   const diffraction = diffractionSoftness(s.aperture, o.sensor) * 6;
   const detail = detailRetention(s.iso, o.noiseProfile);
@@ -173,7 +213,7 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
 
   ctx.clearRect(0, 0, width, height);
 
-  o.scene.layers.forEach((layer, i) => {
+  active.layers.forEach((layer, i) => {
     const src = layers[i];
     if (!src) return;
     // Defocus blur from the depth-of-field model, plus diffraction and
