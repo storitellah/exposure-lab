@@ -241,6 +241,45 @@ test.describe('exposure triangle', () => {
   });
 });
 
+test.describe('white balance', () => {
+  const meanRgb = (page: Page) => page.evaluate(() => {
+    const src = document.querySelector('.viewfinder canvas') as HTMLCanvasElement;
+    const c = document.createElement('canvas');
+    c.width = 64; c.height = 40;
+    const ctx = c.getContext('2d') as CanvasRenderingContext2D;
+    ctx.drawImage(src, 0, 0, 64, 40);
+    const d = ctx.getImageData(0, 0, 64, 40).data;
+    let r = 0; let b = 0;
+    for (let i = 0; i < d.length; i += 4) { r += d[i] ?? 0; b += d[i + 2] ?? 0; }
+    return { r, b };
+  });
+
+  test('a tungsten setting in daylight turns the picture blue and says why', async ({ page }) => {
+    await openApp(page, '/simulator');
+    await expect(page.getByTestId('wb-verdict')).toContainText('Whites look white');
+    await page.waitForTimeout(300);
+    const before = await meanRgb(page);
+    await page.getByTestId('wb-select').selectOption('tungsten');
+    await expect(page.getByTestId('wb-verdict')).toContainText('blue');
+    await expect(page.getByTestId('change-feedback')).toContainText('White balance');
+    await expect.poll(async () => {
+      const after = await meanRgb(page);
+      return after.b / after.r > (before.b / before.r) * 1.15;
+    }).toBe(true);
+  });
+
+  test('completes the white balance lesson', async ({ page }) => {
+    await openApp(page, '/learn/white-balance');
+    await expect(page.getByTestId('wb-verdict')).toContainText('orange');
+    await page.getByTestId('lesson-check').click();
+    await expect(page.getByTestId('lesson-retry')).toBeVisible();
+    await page.getByTestId('wb-select').selectOption('tungsten');
+    await expect(page.getByTestId('wb-verdict')).toContainText('Whites look white');
+    await page.getByTestId('lesson-check').click();
+    await expect(page.getByTestId('lesson-success')).toBeVisible();
+  });
+});
+
 test.describe('glossary', () => {
   test('lists many terms with plain and in-depth explanations, searchable in both languages', async ({ page }) => {
     await openApp(page, '/glossary');

@@ -24,6 +24,18 @@ export const en = {
 
   wbAuto: 'Auto', wbDaylight: 'Daylight', wbCloudy: 'Cloudy', wbShade: 'Shade',
   wbTungsten: 'Tungsten', wbFluorescent: 'Fluorescent', wbFlash: 'Flash',
+  wbCustom: 'Custom (Kelvin)', wbKelvin: 'Colour temperature',
+  wbLightHere: 'Light in this scene', wbCameraSet: 'Camera set for', wbWarmEnd: 'Warmer light', wbCoolEnd: 'Cooler light',
+  wbNeutral: 'Whites look white: the setting matches the light.',
+  wbWarm: 'The light is warmer than the camera expects, so the picture leans orange.',
+  wbVeryWarm: 'Strong orange cast: the camera expects much cooler light than this.',
+  wbCool: 'The light is cooler than the camera expects, so the picture leans blue.',
+  wbVeryCool: 'Strong blue cast: the camera expects much warmer light than this.',
+  wbGreen: 'Fluorescent tubes also add a green tint; the Fluorescent setting removes it.',
+  wbMagenta: 'There is a magenta tint: the camera is correcting for fluorescent light that is not there.',
+  wbAutoKeeps: 'Auto keeps some of this on purpose; pick a preset or a Kelvin value to neutralise it.',
+  lightWarmBulb: 'warm bulbs', lightLowSun: 'low sun or fluorescent', lightDaylight: 'daylight',
+  lightOvercast: 'overcast sky', lightShade: 'open shade',
 
 
   takePhoto: 'Take photograph', retake: 'Retake', keepPhoto: 'Keep photograph',

@@ -18,6 +18,9 @@ and together, for both photo and video.
   same-brightness alternatives you can apply with one tap
 - Connect a real camera over USB-C (webcam mode) or HDMI (capture card) for
   a live preview, with setting control where the device allows it
+- White balance with presets and a custom Kelvin setting: every scene has a
+  real light colour, a mismatched setting produces the matching orange or
+  blue cast, and a warm-to-cool bar explains why (plus a lesson on it)
 - A glossary of 100+ photo and video terms, each explained in plain words
   and in depth, searchable in both languages
 
@@ -273,8 +276,8 @@ e2e/               Playwright browser tests
 
 | Suite | Result |
 |---|---|
-| `npm test` (Vitest, 77 tests) | ✅ all pass |
-| `npx playwright test` (58 tests, desktop + mobile projects) | ✅ all pass |
+| `npm test` (Vitest, 90 tests) | ✅ all pass |
+| `npx playwright test` (62 tests, desktop + mobile projects) | ✅ all pass |
 | `npm run typecheck` (strict TS) | ✅ clean |
 | `npm run lint` (ESLint + react-hooks/compiler rules) | ✅ 0 errors, 0 warnings |
 | `npm audit --omit=dev` (shipped dependencies) | ✅ 0 vulnerabilities — newer advisories exist only in dev tooling (e.g. `zod` via the ESLint hooks plugin) and never reach the built app |

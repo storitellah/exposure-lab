@@ -15,6 +15,7 @@ import { blurCircleMm, diffractionSoftness, shakeAmount, type SensorFormat } fro
 import { noiseAmount, colourNoiseAmount, detailRetention } from '../engine/noise';
 import type { ExposureSettings } from '../engine/settings';
 import type { NoiseProfile } from '../engine/noise';
+import { cameraWhiteBalance, whiteBalanceShift } from '../engine/whitebalance';
 
 export type Quality = 'low' | 'medium' | 'high';
 
@@ -153,15 +154,6 @@ function blurredLayer(index: number, src: HTMLCanvasElement, blurPx: number): HT
   return canvas;
 }
 
-const WB_TINT: Record<ExposureSettings['whiteBalance'], [number, number, number]> = {
-  auto: [0, 0, 0],
-  daylight: [0, 0, 0],
-  cloudy: [14, 4, -10],
-  shade: [22, 6, -16],
-  tungsten: [-18, -4, 26],
-  fluorescent: [-6, 10, -4],
-  flash: [8, 2, -6],
-};
 
 let noiseTile: HTMLCanvasElement | null = null;
 function getNoiseTile(seed: number): HTMLCanvasElement {
@@ -186,6 +178,32 @@ function getNoiseTile(seed: number): HTMLCanvasElement {
   }
   if (seed === 1) noiseTile = c;
   return c;
+}
+
+/**
+ * Multiply each colour channel by its gain, entirely with GPU compositing:
+ * multiply by the gains scaled to at most 1, then add the image to itself
+ * to restore the scale. No pixel read-back, so it stays cheap per frame.
+ */
+function applyChannelGains(
+  ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, width: number, height: number,
+  gains: [number, number, number],
+): void {
+  if (gains.every((g) => Math.abs(g - 1) < 0.01)) return;
+  const max = Math.max(...gains);
+  ctx.save();
+  ctx.globalCompositeOperation = 'multiply';
+  ctx.fillStyle = `rgb(${gains.map((g) => Math.round((g / max) * 255)).join(',')})`;
+  ctx.fillRect(0, 0, width, height);
+  ctx.globalCompositeOperation = 'lighter';
+  let k = max;
+  while (k > 1.005) {
+    const step = Math.min(k, 2);
+    ctx.globalAlpha = step - 1;
+    ctx.drawImage(canvas, 0, 0, width, height);
+    k /= step;
+  }
+  ctx.restore();
 }
 
 /** Renders the simulated image into `target` and returns analysis info. */
@@ -247,6 +265,11 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
     }
   });
 
+  // White balance: the colour cast from any mismatch between the scene's
+  // light and what the camera is set to expect.
+  const wb = whiteBalanceShift(o.scene.light, cameraWhiteBalance(s.whiteBalance, s.wbKelvin, o.scene.light));
+  applyChannelGains(ctx, target, width, height, wb.gains);
+
   // Exposure: multiply for darkening, additive white for over-exposure bloom.
   if (bright < 0.999) {
     ctx.save();
@@ -272,17 +295,6 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
     g.addColorStop(0, 'rgba(255,250,240,0.35)');
     g.addColorStop(1, 'rgba(255,250,240,0)');
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, width, height);
-    ctx.restore();
-  }
-
-  // White balance tint.
-  const tint = WB_TINT[s.whiteBalance];
-  if (tint[0] || tint[1] || tint[2]) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'overlay';
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = `rgb(${128 + tint[0]},${128 + tint[1]},${128 + tint[2]})`;
     ctx.fillRect(0, 0, width, height);
     ctx.restore();
   }

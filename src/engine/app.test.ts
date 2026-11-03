@@ -221,11 +221,13 @@ describe('starting exposures', () => {
         for (const shutter of shutters) {
           for (const iso of isos) {
             for (const evComp of [0, 1, 1.7]) {
-              if (lesson.check({
-                settings: { ...base, aperture, shutter, iso, evComp },
-                sceneEV100: scene.ev100,
-                subjectSpeedPxPerS: scene.subjectSpeedPxPerS,
-              })) { solvable = true; break outer; }
+              for (const whiteBalance of ['auto', 'tungsten', 'daylight', 'shade'] as const) {
+                if (lesson.check({
+                  settings: { ...base, aperture, shutter, iso, evComp, whiteBalance },
+                  sceneEV100: scene.ev100,
+                  subjectSpeedPxPerS: scene.subjectSpeedPxPerS,
+                })) { solvable = true; break outer; }
+              }
             }
           }
         }
@@ -404,8 +406,8 @@ describe('variable maximum aperture', () => {
 });
 
 describe('content data', () => {
-  it('has 12 lessons with bilingual text and valid scenes', () => {
-    expect(LESSONS.length).toBe(12);
+  it('has 13 lessons with bilingual text and valid scenes', () => {
+    expect(LESSONS.length).toBe(13);
     for (const lesson of LESSONS) {
       expect(SCENE_IDS.has(lesson.sceneId), `scene ${lesson.sceneId}`).toBe(true);
       expect(lesson.title.sw.length).toBeGreaterThan(0);

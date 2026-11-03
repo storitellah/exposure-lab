@@ -41,7 +41,7 @@ export default function VideoPage() {
 
       {showGear && <div style={{ marginBottom: '1rem' }}><GearPicker /></div>}
 
-      <Simulator video allowedControls={['aperture', 'iso', 'evComp', 'focal', 'focus', 'advanced']} />
+      <Simulator video allowedControls={['aperture', 'iso', 'evComp', 'focal', 'focus', 'wb', 'advanced']} />
 
       <section style={{ marginTop: '1.2rem' }}>
         <h2>{t('cadenceCompare')}</h2>

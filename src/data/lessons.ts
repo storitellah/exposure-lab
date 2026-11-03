@@ -9,6 +9,7 @@ import { noiseAmount } from '../engine/noise';
 import { subjectBlurPx } from '../engine/scoring';
 import { sceneById } from '../scenes/scenes';
 import { FULL_FRAME } from '../engine/optics';
+import { cameraWhiteBalance, whiteBalanceShift } from '../engine/whitebalance';
 
 export interface LessonCheckContext {
   settings: ExposureSettings;
@@ -20,7 +21,7 @@ export interface Lesson {
   id: string;
   sceneId: string;
   /** Which controls the student may change during the task. */
-  unlocked: ('aperture' | 'shutter' | 'iso' | 'evComp' | 'focusDistM' | 'focalMm')[];
+  unlocked: ('aperture' | 'shutter' | 'iso' | 'evComp' | 'focusDistM' | 'focalMm' | 'whiteBalance')[];
   /**
    * Deliberate starting point, applied on top of the scene's default
    * exposure. Lessons begin *away* from the answer so there is something
@@ -182,6 +183,35 @@ export const LESSONS: Lesson[] = [
     retryFeedback: { en: 'Watch the clipping warnings. Pull exposure back from whichever edge is flashing.', sw: 'Angalia tahadhari za kubanwa. Rudisha mwangaza kutoka ukingo unaowaka.' },
     summary: { en: 'Trust the histogram over the screen — it never lies about clipping.', sw: 'Amini histogramu kuliko skrini — haidanganyi kuhusu mwanga uliopotea.' },
     check: (c) => Math.abs(meterReading(c.sceneEV100, c.settings)) <= 1,
+  },
+  {
+    id: 'white-balance', sceneId: 'food', unlocked: ['whiteBalance'], startPatch: { whiteBalance: 'shade' },
+    title: { en: 'White balance: the colour of light', sw: 'Usawa wa weupe: rangi ya mwanga' },
+    explanation: {
+      en: 'Light has a colour. Household bulbs are orange, midday sun is neutral, and shade is blue. Our eyes adjust without us noticing, but the camera needs to be told. White balance tells it what colour of light to expect so that white things look white. Colour temperature is measured in Kelvin (K): low numbers are warm, high numbers are cool.',
+      sw: 'Mwanga una rangi. Taa za nyumbani ni za rangi ya machungwa, jua la mchana halina upande, na kivuli ni cha buluu. Macho yetu hujirekebisha bila sisi kujua, lakini kamera lazima iambiwe. Usawa wa weupe huiambia kamera rangi gani ya mwanga itarajie ili vitu vyeupe vionekane vyeupe. Joto la rangi hupimwa kwa Kelvin (K): namba ndogo ni za joto, namba kubwa ni baridi.',
+    },
+    task: {
+      en: 'This meal is lit by warm restaurant bulbs and the camera is set to Shade, so everything looks orange. Change the white balance until the plate looks white.',
+      sw: 'Chakula hiki kinamulikwa na taa za joto za mgahawa na kamera imewekwa kwa Kivuli, kwa hiyo kila kitu kinaonekana cha machungwa. Badilisha usawa wa weupe hadi sahani ionekane nyeupe.',
+    },
+    successFeedback: {
+      en: 'Neutral! The setting now matches the warm light, so the camera cancels the orange and the plate looks white.',
+      sw: 'Sawa kabisa! Mpangilio sasa unalingana na mwanga wa joto, kwa hiyo kamera inaondoa rangi ya machungwa na sahani inaonekana nyeupe.',
+    },
+    retryFeedback: {
+      en: 'Still a cast. Bulbs are warm (about 3300K): choose Tungsten, or Custom with a low Kelvin value. Auto keeps a little warmth on purpose.',
+      sw: 'Bado kuna rangi. Taa ni za joto (karibu 3300K): chagua Taa ya ndani, au Maalum na thamani ndogo ya Kelvin. Otomatiki huacha joto kidogo kwa makusudi.',
+    },
+    summary: {
+      en: 'Match the white balance to the light for true colours, or mismatch it on purpose to warm up or cool down a mood.',
+      sw: 'Linganisha usawa wa weupe na mwanga kupata rangi halisi, au usiulinganishe kwa makusudi ili kuongeza joto au ubaridi wa hisia.',
+    },
+    check: (c) => {
+      const light = sceneById('food').light;
+      const shift = whiteBalanceShift(light, cameraWhiteBalance(c.settings.whiteBalance, c.settings.wbKelvin, light));
+      return Math.abs(shift.mired) <= 20 && Math.abs(shift.tint) <= 0.15;
+    },
   },
   {
     id: 'creative', sceneId: 'cyclist', unlocked: ['aperture', 'shutter', 'iso', 'focalMm', 'focusDistM'], startPatch: { aperture: 5.6, shutter: 1 / 125, iso: 100 },

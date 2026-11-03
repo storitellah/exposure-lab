@@ -11,6 +11,7 @@ import {
 } from './primitives';
 import { ISOS, nearest, type ExposureSettings } from '../engine/settings';
 import { solveIso } from '../engine/exposure';
+import type { SceneLight } from '../engine/whitebalance';
 
 export interface SceneLayer {
   /** Distance from the camera in metres — drives depth-of-field blur. */
@@ -51,6 +52,8 @@ export interface SceneDef {
   sw: string;
   /** Scene light level: EV at ISO 100. Sunny ≈ 15, night street ≈ 4. */
   ev100: number;
+  /** Colour of the light. The drawing/photo shows the scene correctly balanced for it. */
+  light: SceneLight;
   subjectDistM: number;
   subjectSpeedPxPerS: number;
   /**
@@ -73,7 +76,7 @@ function grass(ctx: Ctx, colour = '#5B8C4A'): void { ground(ctx, colour); }
 
 export const SCENES: SceneDef[] = [
   {
-    id: 'outdoor-portrait', en: 'Outdoor portrait', sw: 'Picha ya nje ya mtu', ev100: 14,
+    id: 'outdoor-portrait', en: 'Outdoor portrait', sw: 'Picha ya nje ya mtu', ev100: 14, light: { kelvin: 5500 },
     subjectDistM: 2.5, subjectSpeedPxPerS: 0, start: { aperture: 2.8, shutter: 1 / 2000 },
     layers: [
       { distanceM: 4000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#8FC7EB', '#DCEEF7'); sun(c, 660, 90, 34); } },
@@ -83,7 +86,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'window-portrait', en: 'Indoor portrait near a window', sw: 'Picha ya ndani karibu na dirisha', ev100: 8,
+    id: 'window-portrait', en: 'Indoor portrait near a window', sw: 'Picha ya ndani karibu na dirisha', ev100: 8, light: { kelvin: 6500 },
     subjectDistM: 1.8, subjectSpeedPxPerS: 0, start: { aperture: 2.8, shutter: 1 / 60 },
     layers: [
       { distanceM: 8, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#4A3F35'; c.fillRect(0, 0, REF_W, REF_H); c.fillStyle = '#3A322A'; c.fillRect(0, REF_H * 0.75, REF_W, REF_H * 0.25); } },
@@ -92,7 +95,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'street', en: 'Street photography', sw: 'Upigaji picha mtaani', ev100: 13,
+    id: 'street', en: 'Street photography', sw: 'Upigaji picha mtaani', ev100: 13, light: { kelvin: 5800 },
     subjectDistM: 6, subjectSpeedPxPerS: 90, start: { aperture: 8, shutter: 1 / 250 },
     layers: [
       { distanceM: 2000, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#A8CFE8', '#E8F0F2') },
@@ -102,7 +105,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'football', en: 'Football sprint', sw: 'Mchezaji wa mpira akikimbia', ev100: 14,
+    id: 'football', en: 'Football sprint', sw: 'Mchezaji wa mpira akikimbia', ev100: 14, light: { kelvin: 5500 },
     subjectDistM: 12, subjectSpeedPxPerS: 420, start: { aperture: 4, shutter: 1 / 1000 }, video: true,
     layers: [
       { distanceM: 3000, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#9CD0EE', '#E4F2F8') },
@@ -112,7 +115,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'cyclist', en: 'Cyclist in motion', sw: 'Mwendesha baiskeli', ev100: 13,
+    id: 'cyclist', en: 'Cyclist in motion', sw: 'Mwendesha baiskeli', ev100: 13, light: { kelvin: 4300 },
     subjectDistM: 8, subjectSpeedPxPerS: 300, start: { aperture: 5.6, shutter: 1 / 500 }, video: true,
     layers: [
       { distanceM: 2000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#F7C873', '#FBE4B8', 0.6); sun(c, 130, 120, 40, '#FBD98A'); } },
@@ -121,7 +124,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'market', en: 'Busy market', sw: 'Soko lenye shughuli nyingi', ev100: 12,
+    id: 'market', en: 'Busy market', sw: 'Soko lenye shughuli nyingi', ev100: 12, light: { kelvin: 6500 },
     subjectDistM: 5, subjectSpeedPxPerS: 60, start: { aperture: 5.6, shutter: 1 / 250 },
     layers: [
       { distanceM: 500, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#BFE0EE', '#F1EDDF', 0.5) },
@@ -131,7 +134,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'classroom', en: 'Classroom', sw: 'Darasani', ev100: 7,
+    id: 'classroom', en: 'Classroom', sw: 'Darasani', ev100: 7, light: { kelvin: 4000, tint: 0.3 },
     subjectDistM: 3.5, subjectSpeedPxPerS: 20, start: { aperture: 2.8, shutter: 1 / 125 },
     layers: [
       { distanceM: 10, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#5B6B5E'; c.fillRect(0, 0, REF_W, REF_H); c.fillStyle = '#274E33'; c.fillRect(120, 60, 380, 180); c.strokeStyle = '#C9B98A'; c.lineWidth = 8; c.strokeRect(120, 60, 380, 180); c.fillStyle = '#3A4440'; c.fillRect(0, REF_H * 0.72, REF_W, REF_H * 0.28); } },
@@ -140,7 +143,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'landscape', en: 'Landscape', sw: 'Mandhari', ev100: 15,
+    id: 'landscape', en: 'Landscape', sw: 'Mandhari', ev100: 15, light: { kelvin: 5800 },
     subjectDistM: 40, subjectSpeedPxPerS: 0, start: { aperture: 11, shutter: 1 / 250 },
     layers: [
       { distanceM: 10000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#8FC7EB', '#EAF4F8', 0.55); sun(c, 620, 90, 30); } },
@@ -151,7 +154,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'night-street', en: 'Night street', sw: 'Mtaa usiku', ev100: 4,
+    id: 'night-street', en: 'Night street', sw: 'Mtaa usiku', ev100: 4, light: { kelvin: 3000 },
     subjectDistM: 10, subjectSpeedPxPerS: 40, start: { aperture: 2.8, shutter: 1 / 60 }, video: true,
     layers: [
       { distanceM: 2000, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#101423', '#232B45') },
@@ -161,7 +164,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'concert', en: 'Concert', sw: 'Tamasha la muziki', ev100: 5,
+    id: 'concert', en: 'Concert', sw: 'Tamasha la muziki', ev100: 5, light: { kelvin: 3200 },
     subjectDistM: 15, subjectSpeedPxPerS: 120, start: { aperture: 2.8, shutter: 1 / 125 }, video: true,
     layers: [
       { distanceM: 60, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#12101C'; c.fillRect(0, 0, REF_W, REF_H); } },
@@ -171,7 +174,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'wildlife', en: 'Wildlife', sw: 'Wanyamapori', ev100: 13,
+    id: 'wildlife', en: 'Wildlife', sw: 'Wanyamapori', ev100: 13, light: { kelvin: 5500 },
     subjectDistM: 60, subjectSpeedPxPerS: 100, start: { aperture: 5.6, shutter: 1 / 500 },
     layers: [
       { distanceM: 8000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#F3C77B', '#FAE7C0', 0.58); sun(c, 680, 110, 44, '#F7B554'); } },
@@ -189,7 +192,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'bird-flight', en: 'Bird in flight', sw: 'Ndege akiruka', ev100: 14,
+    id: 'bird-flight', en: 'Bird in flight', sw: 'Ndege akiruka', ev100: 14, light: { kelvin: 5800 },
     subjectDistM: 30, subjectSpeedPxPerS: 500, start: { aperture: 5.6, shutter: 1 / 2000 },
     layers: [
       { distanceM: 8000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#7FB8E0', '#D5EAF6', 0.85); sun(c, 140, 100, 30); } },
@@ -198,7 +201,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'waterfall', en: 'Waterfall', sw: 'Maporomoko ya maji', ev100: 12,
+    id: 'waterfall', en: 'Waterfall', sw: 'Maporomoko ya maji', ev100: 12, light: { kelvin: 6800 },
     subjectDistM: 20, subjectSpeedPxPerS: 260, start: { aperture: 8, shutter: 1 / 125 }, video: true,
     layers: [
       { distanceM: 1000, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#A5CBDD', '#E1EFF3', 0.4) },
@@ -208,7 +211,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'moving-vehicle', en: 'Moving vehicle', sw: 'Gari likitembea', ev100: 12,
+    id: 'moving-vehicle', en: 'Moving vehicle', sw: 'Gari likitembea', ev100: 12, light: { kelvin: 5500 },
     subjectDistM: 15, subjectSpeedPxPerS: 480, start: { aperture: 5.6, shutter: 1 / 250 }, video: true,
     layers: [
       { distanceM: 2000, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#B8D8E8', '#EDF3F0', 0.55) },
@@ -217,7 +220,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'backlit', en: 'Backlit subject', sw: 'Mtu mwenye mwanga nyuma', ev100: 13,
+    id: 'backlit', en: 'Backlit subject', sw: 'Mtu mwenye mwanga nyuma', ev100: 13, light: { kelvin: 3800 },
     subjectDistM: 3, subjectSpeedPxPerS: 0, start: { aperture: 4, shutter: 1 / 1000 },
     layers: [
       { distanceM: 9000, speed: { x: 0, y: 0 }, lights: true, draw: (c) => { skyGradient(c, '#F7B36A', '#FBE3B8', 0.7); sun(c, 400, 210, 62, '#FFF0C0'); } },
@@ -226,7 +229,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'low-light-interior', en: 'Low-light interior', sw: 'Chumba chenye mwanga hafifu', ev100: 5,
+    id: 'low-light-interior', en: 'Low-light interior', sw: 'Chumba chenye mwanga hafifu', ev100: 5, light: { kelvin: 2800 },
     subjectDistM: 2.5, subjectSpeedPxPerS: 10, start: { aperture: 2.8, shutter: 1 / 60 },
     layers: [
       { distanceM: 8, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#2A2320'; c.fillRect(0, 0, REF_W, REF_H); c.fillStyle = '#1F1A17'; c.fillRect(0, REF_H * 0.74, REF_W, REF_H * 0.26); } },
@@ -235,7 +238,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'product', en: 'Product photograph', sw: 'Picha ya bidhaa', ev100: 9,
+    id: 'product', en: 'Product photograph', sw: 'Picha ya bidhaa', ev100: 9, light: { kelvin: 5500 },
     subjectDistM: 0.8, subjectSpeedPxPerS: 0, start: { aperture: 8, shutter: 1 / 60 },
     layers: [
       { distanceM: 3, speed: { x: 0, y: 0 }, draw: (c) => { const g = c.createLinearGradient(0, 0, 0, REF_H); g.addColorStop(0, '#EFECE4'); g.addColorStop(1, '#CFC8BA'); c.fillStyle = g; c.fillRect(0, 0, REF_W, REF_H); } },
@@ -243,7 +246,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'food', en: 'Food photograph', sw: 'Picha ya chakula', ev100: 8,
+    id: 'food', en: 'Food photograph', sw: 'Picha ya chakula', ev100: 8, light: { kelvin: 3300 },
     subjectDistM: 0.6, subjectSpeedPxPerS: 0, start: { aperture: 4, shutter: 1 / 60 },
     layers: [
       { distanceM: 2.5, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#5A4634'; c.fillRect(0, 0, REF_W, REF_H); c.fillStyle = '#6E5640'; c.fillRect(0, 0, REF_W, REF_H * 0.4); window_(c, 560, 40, 180, 140, '#F6EBD2'); } },
@@ -252,7 +255,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'group', en: 'Group photograph', sw: 'Picha ya kikundi', ev100: 12,
+    id: 'group', en: 'Group photograph', sw: 'Picha ya kikundi', ev100: 12, light: { kelvin: 5500 },
     subjectDistM: 4, subjectSpeedPxPerS: 15, start: { aperture: 8, shutter: 1 / 250 },
     layers: [
       { distanceM: 1000, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#A8CFE8', '#EAF2EE', 0.5); ground(c, '#7FA96B', 0.5); } },
@@ -262,7 +265,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'interview', en: 'Documentary interview', sw: 'Mahojiano ya kumbukumbu', ev100: 7, video: true,
+    id: 'interview', en: 'Documentary interview', sw: 'Mahojiano ya kumbukumbu', ev100: 7, light: { kelvin: 3400 }, video: true,
     subjectDistM: 2, subjectSpeedPxPerS: 8, start: { aperture: 2.8, shutter: 1 / 60 },
     layers: [
       { distanceM: 6, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#3B3630'; c.fillRect(0, 0, REF_W, REF_H); c.fillStyle = '#4A443C'; c.fillRect(0, 0, REF_W, REF_H * 0.5); c.fillStyle = '#332E28'; c.fillRect(60, 120, 130, 260); tree(c, 660, 430, 140, '#41563E'); } },
@@ -271,7 +274,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'walking-video', en: 'Walking video subject', sw: 'Mtu anayetembea (video)', ev100: 12, video: true,
+    id: 'walking-video', en: 'Walking video subject', sw: 'Mtu anayetembea (video)', ev100: 12, light: { kelvin: 5500 }, video: true,
     subjectDistM: 5, subjectSpeedPxPerS: 140, start: { aperture: 11, shutter: 1 / 50 },
     layers: [
       { distanceM: 1500, speed: { x: 0, y: 0 }, draw: (c) => skyGradient(c, '#9CC8E8', '#EAF0EC', 0.58) },
@@ -280,7 +283,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'slow-motion', en: 'Slow-motion action', sw: 'Mwendo wa polepole', ev100: 13, video: true,
+    id: 'slow-motion', en: 'Slow-motion action', sw: 'Mwendo wa polepole', ev100: 13, light: { kelvin: 5500 }, video: true,
     subjectDistM: 6, subjectSpeedPxPerS: 380, start: { aperture: 5.6, shutter: 1 / 250 },
     layers: [
       { distanceM: 800, speed: { x: 0, y: 0 }, draw: (c) => { skyGradient(c, '#F2B968', '#FAE1B2', 0.62); sun(c, 640, 120, 36, '#FBD98A'); } },
@@ -289,7 +292,7 @@ export const SCENES: SceneDef[] = [
     ],
   },
   {
-    id: 'video-interview', en: 'Video interview', sw: 'Mahojiano ya video', ev100: 8, video: true,
+    id: 'video-interview', en: 'Video interview', sw: 'Mahojiano ya video', ev100: 8, light: { kelvin: 5600 }, video: true,
     subjectDistM: 1.8, subjectSpeedPxPerS: 6, start: { aperture: 2.8, shutter: 1 / 50 },
     layers: [
       { distanceM: 7, speed: { x: 0, y: 0 }, draw: (c) => { c.fillStyle = '#2E3440'; c.fillRect(0, 0, REF_W, REF_H); building(c, 80, 420, 120, 260, '#252B36', 'rgba(120,160,220,0.5)', 0.4, 41); c.fillStyle = '#232833'; c.fillRect(0, REF_H * 0.78, REF_W, REF_H * 0.22); } },

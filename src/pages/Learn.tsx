@@ -90,7 +90,7 @@ function LessonRunner({ lessonId }: { lessonId: string }) {
 
   const controlName: Record<string, string> = {
     aperture: 'aperture', shutter: 'shutter', iso: 'iso',
-    evComp: 'evComp', focalMm: 'focal', focusDistM: 'focus',
+    evComp: 'evComp', focalMm: 'focal', focusDistM: 'focus', whiteBalance: 'wb',
   };
   const controls = [...new Set([...lesson.unlocked.map((u) => controlName[u] ?? u), 'focus'])];
 

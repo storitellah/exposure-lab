@@ -28,7 +28,7 @@ export const EV_COMP_RANGE = { min: -5, max: 5, step: 1 / 3 };
 
 export type ShootMode = 'M' | 'A' | 'S' | 'P';
 export type WhiteBalance =
-  | 'auto' | 'daylight' | 'cloudy' | 'shade' | 'tungsten' | 'fluorescent' | 'flash';
+  | 'auto' | 'daylight' | 'cloudy' | 'shade' | 'tungsten' | 'fluorescent' | 'flash' | 'custom';
 
 export interface ExposureSettings {
   aperture: number;      // f-number
@@ -40,6 +40,8 @@ export interface ExposureSettings {
   mode: ShootMode;
   autoIso: boolean;
   whiteBalance: WhiteBalance;
+  /** Colour temperature used when whiteBalance is 'custom'. */
+  wbKelvin: number;
   stabilisation: boolean;
   ndStops: number;       // neutral density filter strength in stops (0 = none)
   flash: boolean;
@@ -57,6 +59,7 @@ export function defaultSettings(): ExposureSettings {
     mode: 'M',
     autoIso: false,
     whiteBalance: 'auto',
+    wbKelvin: 5500,
     stabilisation: true,
     ndStops: 0,
     flash: false,

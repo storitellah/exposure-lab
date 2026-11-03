@@ -645,3 +645,22 @@ table.data th { background: var(--bg-3); }
 @media (pointer: coarse) {
   .stepper-btn { min-width: 52px; }
 }
+
+/* ---------- white balance ---------- */
+.wb { display: grid; gap: 0.45rem; padding: 0.7rem 0.8rem; border: 1px solid var(--line); border-radius: var(--radius-s); background: var(--bg-3); }
+.wb-head { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; }
+.wb-head h3 { margin: 0; font-size: 0.95rem; }
+.wb-head select { min-height: 40px; }
+.wb-bar { position: relative; padding-top: 0.9rem; }
+.wb-gradient { height: 12px; border-radius: 6px; border: 1px solid var(--line); }
+.wb-mark {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font-size: 0.8rem; line-height: 1; color: var(--fg); text-shadow: 0 0 2px var(--bg);
+}
+.wb-mark.camera { top: 1.55rem; }
+.wb-ends { display: flex; justify-content: space-between; margin-top: 0.55rem; font-size: 0.72rem; color: var(--fg-dim); }
+.wb-readout { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; margin: 0; font-size: 0.82rem; }
+.wb-readout dt { color: var(--fg-dim); }
+.wb-readout dd { margin: 0; font-weight: 600; }
+.wb-verdict { margin: 0; font-size: 0.85rem; }
+.wb-verdict.neutral { color: var(--success-text); }

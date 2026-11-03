@@ -26,6 +26,18 @@ export const sw: Record<TranslationKey, string> = {
 
   wbAuto: 'Otomatiki', wbDaylight: 'Mchana', wbCloudy: 'Mawingu', wbShade: 'Kivuli',
   wbTungsten: 'Taa ya ndani', wbFluorescent: 'Florosenti', wbFlash: 'Flashi',
+  wbCustom: 'Maalum (Kelvin)', wbKelvin: 'Joto la rangi',
+  wbLightHere: 'Mwanga wa mandhari hii', wbCameraSet: 'Kamera imewekwa kwa', wbWarmEnd: 'Mwanga wa joto', wbCoolEnd: 'Mwanga baridi',
+  wbNeutral: 'Weupe unaonekana mweupe: mpangilio unalingana na mwanga.',
+  wbWarm: 'Mwanga una joto zaidi kuliko kamera inavyotarajia, kwa hiyo picha inaelekea rangi ya machungwa.',
+  wbVeryWarm: 'Rangi kali ya machungwa: kamera inatarajia mwanga baridi zaidi kuliko huu.',
+  wbCool: 'Mwanga ni baridi zaidi kuliko kamera inavyotarajia, kwa hiyo picha inaelekea rangi ya buluu.',
+  wbVeryCool: 'Rangi kali ya buluu: kamera inatarajia mwanga wa joto zaidi kuliko huu.',
+  wbGreen: 'Taa za florosenti pia huongeza rangi ya kijani; mpangilio wa Florosenti huiondoa.',
+  wbMagenta: 'Kuna rangi ya zambarau: kamera inarekebisha mwanga wa florosenti ambao haupo.',
+  wbAutoKeeps: 'Otomatiki huacha kiasi cha rangi hii kwa makusudi; chagua mpangilio au thamani ya Kelvin kuiondoa.',
+  lightWarmBulb: 'taa za joto', lightLowSun: 'jua la chini au florosenti', lightDaylight: 'mwanga wa mchana',
+  lightOvercast: 'anga lenye mawingu', lightShade: 'kivuli wazi',
 
 
   takePhoto: 'Piga picha', retake: 'Piga tena', keepPhoto: 'Hifadhi picha',

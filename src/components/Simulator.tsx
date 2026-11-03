@@ -6,8 +6,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   APERTURES, SHUTTERS, ISOS, formatAperture, formatShutter,
-  type ExposureSettings, type ShootMode, type WhiteBalance,
+  type ExposureSettings, type ShootMode,
 } from '../engine/settings';
+import { cameraWhiteBalance, castKind, whiteBalanceShift } from '../engine/whitebalance';
 import { meterReading, describeStopChange, settingsEV100 } from '../engine/exposure';
 import { resolveExposure } from '../engine/autoexposure';
 import { depthOfField, equivalentFocal } from '../engine/optics';
@@ -19,6 +20,7 @@ import { sensorOf, limitsOf, maxApertureAt } from '../data/catalogue';
 import type { Challenge } from '../data/challenges';
 import { useStore } from '../state/store';
 import { useI18n } from '../i18n';
+import type { TranslationKey } from '../i18n/en';
 import { SceneCanvas } from './SceneCanvas';
 import { Meter } from './Meter';
 import { Histogram } from './Histogram';
@@ -28,6 +30,7 @@ import { playShutterSound } from '../utils/audio';
 import { haptic, detectDefaultQuality } from '../utils/device';
 import { ControlSlider } from './ControlSlider';
 import { ExposureTriangle } from './ExposureTriangle';
+import { WhiteBalanceControl } from './WhiteBalanceControl';
 
 export interface SimulatorProps {
   video?: boolean;
@@ -44,6 +47,11 @@ interface PendingShot {
   meter: number;
   score?: ScoreBreakdown;
 }
+
+const WB_KEYS = {
+  auto: 'wbAuto', daylight: 'wbDaylight', cloudy: 'wbCloudy', shade: 'wbShade', tungsten: 'wbTungsten',
+  fluorescent: 'wbFluorescent', flash: 'wbFlash', custom: 'wbCustom',
+} as const satisfies Record<ExposureSettings['whiteBalance'], TranslationKey>;
 
 export function Simulator({
   video = false, challenge, allowedControls, onCaptureScored, compact = false,
@@ -125,10 +133,19 @@ export function Simulator({
     } else if (prev.iso !== cur.iso) {
       what = `ISO ${prev.iso} → ISO ${cur.iso}`;
       consequence = cur.iso > prev.iso ? 'More visible noise and less fine detail.' : 'Cleaner image with finer detail.';
+    } else if (prev.whiteBalance !== cur.whiteBalance || (cur.whiteBalance === 'custom' && prev.wbKelvin !== cur.wbKelvin)) {
+      const label = (wb: ExposureSettings) => (wb.whiteBalance === 'custom' ? `${wb.wbKelvin}K` : t(WB_KEYS[wb.whiteBalance]));
+      const before = whiteBalanceShift(scene.light, cameraWhiteBalance(prev.whiteBalance, prev.wbKelvin, scene.light)).mired;
+      const after = whiteBalanceShift(scene.light, cameraWhiteBalance(cur.whiteBalance, cur.wbKelvin, scene.light)).mired;
+      setChangeMsg(`${t('whiteBalance')} ${label(prev)} → ${label(cur)}: ${
+        castKind(after) === 'neutral' ? t('wbNeutral')
+          : after > before ? 'colours shift warmer (more orange).' : 'colours shift cooler (more blue).'}`);
+      prevRef.current = cur;
+      return;
     }
     if (what) setChangeMsg(`${what} ${describeStopChange(stops)}. ${consequence}`);
     prevRef.current = cur;
-  }, [state.settings]);
+  }, [state.settings, scene.light, t]);
 
   const onFocusTap = useCallback((x: number, y: number, estimatedDistM: number) => {
     update({ focusPoint: { x, y }, focusDistM: estimatedDistM });
@@ -403,22 +420,19 @@ export function Simulator({
         <Meter reading={meter} />
         {hist && <Histogram data={hist} />}
 
+        {(allowed('wb') || allowed('advanced')) && (
+          <WhiteBalanceControl
+            value={state.settings.whiteBalance}
+            kelvin={state.settings.wbKelvin}
+            light={scene.light}
+            onChange={update}
+          />
+        )}
+
         {allowed('advanced') && (
           <details>
             <summary style={{ cursor: 'pointer', fontWeight: 700 }}>{t('settings')}</summary>
             <div style={{ display: 'grid', gap: '0.5rem', paddingTop: '0.5rem' }}>
-              <label>
-                {t('whiteBalance')}{' '}
-                <select value={state.settings.whiteBalance} onChange={(e) => update({ whiteBalance: e.target.value as WhiteBalance })}>
-                  <option value="auto">{t('wbAuto')}</option>
-                  <option value="daylight">{t('wbDaylight')}</option>
-                  <option value="cloudy">{t('wbCloudy')}</option>
-                  <option value="shade">{t('wbShade')}</option>
-                  <option value="tungsten">{t('wbTungsten')}</option>
-                  <option value="fluorescent">{t('wbFluorescent')}</option>
-                  <option value="flash">{t('wbFlash')}</option>
-                </select>
-              </label>
               <label>
                 {t('ndFilter')}{' '}
                 <select value={state.settings.ndStops} onChange={(e) => update({ ndStops: Number(e.target.value) })}>
