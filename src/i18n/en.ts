@@ -36,6 +36,7 @@ export const en = {
   wbAutoKeeps: 'Auto keeps some of this on purpose; pick a preset or a Kelvin value to neutralise it.',
   lightWarmBulb: 'warm bulbs', lightLowSun: 'low sun or fluorescent', lightDaylight: 'daylight',
   lightOvercast: 'overcast sky', lightShade: 'open shade',
+  wbWhatIs: 'What is white balance? What is Kelvin?', wbMoreTerms: 'All white balance terms in the glossary →',
 
 
   takePhoto: 'Take photograph', retake: 'Retake', keepPhoto: 'Keep photograph',

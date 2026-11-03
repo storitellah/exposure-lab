@@ -38,6 +38,7 @@ export const sw: Record<TranslationKey, string> = {
   wbAutoKeeps: 'Otomatiki huacha kiasi cha rangi hii kwa makusudi; chagua mpangilio au thamani ya Kelvin kuiondoa.',
   lightWarmBulb: 'taa za joto', lightLowSun: 'jua la chini au florosenti', lightDaylight: 'mwanga wa mchana',
   lightOvercast: 'anga lenye mawingu', lightShade: 'kivuli wazi',
+  wbWhatIs: 'Usawa wa weupe ni nini? Kelvin ni nini?', wbMoreTerms: 'Maneno yote ya usawa wa weupe kwenye kamusi →',
 
 
   takePhoto: 'Piga picha', retake: 'Piga tena', keepPhoto: 'Hifadhi picha',

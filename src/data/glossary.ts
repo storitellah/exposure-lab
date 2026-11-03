@@ -3,40 +3,10 @@
  * plain words for a beginner, and in depth for someone ready for the detail.
  * English and Kiswahili.
  */
+import { entry, type GlossaryEntry } from './glossary-core';
+import { WB_GLOSSARY } from './glossary-wb';
 
-export type GlossaryCategory =
-  | 'exposure' | 'modes' | 'lens' | 'focus' | 'motion' | 'sensor' | 'light' | 'flash' | 'video';
-
-export interface GlossaryEntry {
-  id: string;
-  category: GlossaryCategory;
-  term: { en: string; sw: string };
-  simple: { en: string; sw: string };
-  advanced: { en: string; sw: string };
-}
-
-type Pair = [string, string];
-
-function entry(category: GlossaryCategory, id: string, term: Pair, simple: Pair, advanced: Pair): GlossaryEntry {
-  return {
-    id, category,
-    term: { en: term[0], sw: term[1] },
-    simple: { en: simple[0], sw: simple[1] },
-    advanced: { en: advanced[0], sw: advanced[1] },
-  };
-}
-
-export const CATEGORY_LABELS: Record<GlossaryCategory, { en: string; sw: string }> = {
-  exposure: { en: 'Exposure', sw: 'Mwangaza' },
-  modes: { en: 'Camera modes', sw: 'Hali za kamera' },
-  lens: { en: 'Lenses', sw: 'Lenzi' },
-  focus: { en: 'Focus and sharpness', sw: 'Focus na uwazi' },
-  motion: { en: 'Motion and shutter', sw: 'Mwendo na shutter' },
-  sensor: { en: 'Sensor and files', sw: 'Sensa na mafaili' },
-  light: { en: 'Light and colour', sw: 'Mwanga na rangi' },
-  flash: { en: 'Flash', sw: 'Flashi' },
-  video: { en: 'Video', sw: 'Video' },
-};
+export { CATEGORY_LABELS, type GlossaryCategory, type GlossaryEntry } from './glossary-core';
 
 export const GLOSSARY: GlossaryEntry[] = [
   /* ------------------------------ Exposure ------------------------------ */
@@ -446,17 +416,9 @@ export const GLOSSARY: GlossaryEntry[] = [
     ['The camera presents itself as a standard UVC video device, so any app or browser can show its live picture without drivers. Exposure is normally still set on the camera\'s own controls.',
       'Kamera hujionyesha kama kifaa cha kawaida cha video cha UVC, kwa hiyo programu au kivinjari chochote kinaweza kuonyesha picha yake hai bila madereva. Mwangaza kwa kawaida bado huwekwa kwenye vidhibiti vya kamera yenyewe.']),
 
+  ...WB_GLOSSARY,
+
   /* ---------------------------- Light and colour ---------------------------- */
-  entry('light', 'white-balance', ['White balance', 'Usawa wa weupe'],
-    ['A setting that makes white things look white, whatever colour the light is.',
-      'Mpangilio unaofanya vitu vyeupe vionekane vyeupe, bila kujali rangi ya mwanga.'],
-    ['Scales the red and blue channels against green to neutralise the light source\'s colour cast. Presets, Kelvin values or a custom reading from a grey card. Can be changed freely afterwards in RAW.',
-      'Hurekebisha chaneli za nyekundu na buluu dhidi ya kijani ili kuondoa rangi ya chanzo cha mwanga. Mipangilio tayari, thamani za Kelvin au kipimo maalum kutoka kadi ya kijivu. Inaweza kubadilishwa baadaye kwa RAW.']),
-  entry('light', 'colour-temperature', ['Colour temperature (Kelvin)', 'Joto la rangi (Kelvin)'],
-    ['A number for how warm (orange) or cool (blue) light is.',
-      'Namba ya jinsi mwanga ulivyo wa joto (machungwa) au baridi (buluu).'],
-    ['Measured in kelvin: candle about 1900K, tungsten 3200K, midday sun 5500K, overcast 6500K, shade 7500K+. Note: a higher Kelvin setting on the camera makes the picture warmer.',
-      'Hupimwa kwa kelvin: mshumaa takriban 1900K, tungsten 3200K, jua la mchana 5500K, mawingu 6500K, kivuli 7500K+. Kumbuka: mpangilio wa juu wa Kelvin kwenye kamera hufanya picha kuwa ya joto zaidi.']),
   entry('light', 'golden-hour', ['Golden hour', 'Saa ya dhahabu'],
     ['The hour after sunrise and before sunset, when light is soft, warm and flattering.',
       'Saa baada ya jua kuchomoza na kabla ya kuzama, mwanga ukiwa laini, wa joto na wa kupendeza.'],

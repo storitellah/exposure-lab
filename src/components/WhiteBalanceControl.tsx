@@ -1,7 +1,8 @@
 /**
  * White balance: preset or custom Kelvin, a warm-to-cool bar showing the
  * scene's light against what the camera is set to expect, and a plain
- * explanation of the resulting colour cast.
+ * explanation of the resulting colour cast — plus what each preset is for and
+ * a "What is white balance?" explainer, in plain words and in depth.
  */
 import { useId, useMemo } from 'react';
 import type { WhiteBalance } from '../engine/settings';
@@ -12,6 +13,9 @@ import {
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n/en';
 import { ControlSlider } from './ControlSlider';
+import { Link } from '../router';
+import { wbTerm, WB_SETTING_TERM, WB_EXPLAINER_TERMS } from '../data/glossary-wb';
+import type { GlossaryEntry } from '../data/glossary-core';
 
 const KELVINS: number[] = [];
 for (let k = KELVIN_RANGE.min; k <= KELVIN_RANGE.max; k += KELVIN_RANGE.step) KELVINS.push(k);
@@ -26,6 +30,7 @@ const PRESETS: { value: WhiteBalance; key: TranslationKey }[] = [
   { value: 'shade', key: 'wbShade' },
   { value: 'custom', key: 'wbCustom' },
 ];
+
 
 const CAST_KEYS = {
   neutral: 'wbNeutral', warm: 'wbWarm', veryWarm: 'wbVeryWarm', cool: 'wbCool', veryCool: 'wbVeryCool',
@@ -60,7 +65,8 @@ export function WhiteBalanceControl(props: {
   light: SceneLight;
   onChange: (patch: { whiteBalance?: WhiteBalance; wbKelvin?: number }) => void;
 }) {
-  const { t } = useI18n();
+  const { t, pick } = useI18n();
+  const presetTerm = wbTerm(WB_SETTING_TERM[props.value]);
   const selectId = useId();
   const camera = useMemo(() => cameraWhiteBalance(props.value, props.kelvin, props.light), [props.value, props.kelvin, props.light]);
   const shift = useMemo(() => whiteBalanceShift(props.light, camera), [props.light, camera]);
@@ -82,6 +88,8 @@ export function WhiteBalanceControl(props: {
           {PRESETS.map((p) => <option key={p.value} value={p.value}>{t(p.key)}</option>)}
         </select>
       </div>
+
+      {presetTerm && <p className="wb-preset-note" data-testid="wb-preset-note">{pick(presetTerm.simple)}</p>}
 
       {props.value === 'custom' && (
         <ControlSlider
@@ -110,6 +118,24 @@ export function WhiteBalanceControl(props: {
         {shift.tint < -0.15 && <> {t('wbMagenta')}</>}
         {props.value === 'auto' && cast !== 'neutral' && <> {t('wbAutoKeeps')}</>}
       </p>
+
+      <details className="wb-explainer" data-testid="wb-explainer">
+        <summary>{t('wbWhatIs')}</summary>
+        {WB_EXPLAINER_TERMS.map((id) => wbTerm(id)).filter((e): e is GlossaryEntry => !!e).map((e) => (
+          <div key={e.id} className="wb-term">
+            <h4>{pick(e.term)}</h4>
+            <p><span className="glossary-label">{t('glossaryPlain')}</span> {pick(e.simple)}</p>
+            <p><span className="glossary-label depth">{t('glossaryDepth')}</span> {pick(e.advanced)}</p>
+          </div>
+        ))}
+        {presetTerm && props.value !== 'custom' && (
+          <div className="wb-term">
+            <h4>{pick(presetTerm.term)}</h4>
+            <p><span className="glossary-label depth">{t('glossaryDepth')}</span> {pick(presetTerm.advanced)}</p>
+          </div>
+        )}
+        <p><Link to="/glossary#gloss-cat-wb">{t('wbMoreTerms')}</Link></p>
+      </details>
     </section>
   );
 }

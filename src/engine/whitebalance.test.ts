@@ -3,6 +3,8 @@ import {
   autoWhiteBalance, blackbodyRgb, cameraWhiteBalance, castKind, clampKelvin, whiteBalanceShift, WB_PRESETS,
 } from './whitebalance';
 import { SCENES } from '../scenes/scenes';
+import { WB_GLOSSARY, WB_SETTING_TERM, WB_EXPLAINER_TERMS, wbTerm } from '../data/glossary-wb';
+import { GLOSSARY } from '../data/glossary';
 
 const shift = (lightK: number, wb: Parameters<typeof cameraWhiteBalance>[0], custom = 5500, tint = 0) =>
   whiteBalanceShift({ kelvin: lightK, tint }, cameraWhiteBalance(wb, custom, { kelvin: lightK, tint }));
@@ -65,5 +67,17 @@ describe('white balance', () => {
       expect(scene.light.kelvin, scene.id).toBeGreaterThanOrEqual(2500);
       expect(scene.light.kelvin, scene.id).toBeLessThanOrEqual(10000);
     }
+  });
+
+  it('explains every setting, in plain words and in depth, in both languages', () => {
+    for (const id of [...Object.values(WB_SETTING_TERM), ...WB_EXPLAINER_TERMS]) {
+      const e = wbTerm(id);
+      expect(e, id).toBeDefined();
+      expect(e?.simple.sw.length, id).toBeGreaterThan(20);
+      expect(e?.advanced.sw.length, id).toBeGreaterThan(20);
+    }
+    // Every white balance term also appears in the full glossary.
+    for (const e of WB_GLOSSARY) expect(GLOSSARY.some((g) => g.id === e.id), e.id).toBe(true);
+    expect(WB_GLOSSARY.length).toBeGreaterThanOrEqual(15);
   });
 });

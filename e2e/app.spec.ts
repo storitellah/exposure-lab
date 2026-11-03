@@ -268,6 +268,21 @@ test.describe('white balance', () => {
     }).toBe(true);
   });
 
+  test('explains white balance and Kelvin in plain words and in depth', async ({ page }) => {
+    await openApp(page, '/simulator');
+    await page.getByTestId('wb-select').selectOption('shade');
+    await expect(page.getByTestId('wb-preset-note')).toContainText('shadow');
+    const explainer = page.getByTestId('wb-explainer');
+    await explainer.locator('summary').click();
+    await expect(explainer).toContainText('Colour temperature');
+    await expect(explainer).toContainText('In plain words');
+    await expect(explainer).toContainText('In depth');
+    await explainer.getByRole('link', { name: /All white balance terms/ }).click();
+    await expect(page).toHaveURL(/\/glossary#gloss-cat-wb$/);
+    await expect(page.locator('#gloss-cat-wb')).toBeInViewport();
+    await expect(page.locator('#wb-daylight')).toContainText('Daylight');
+  });
+
   test('completes the white balance lesson', async ({ page }) => {
     await openApp(page, '/learn/white-balance');
     await expect(page.getByTestId('wb-verdict')).toContainText('orange');
