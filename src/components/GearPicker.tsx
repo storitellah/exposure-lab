@@ -1,11 +1,12 @@
 /**
  * Camera body and lens selection with the mount-compatibility engine.
- * Incompatible pairs cannot be selected; adapted pairs explain limitations.
+ * Lenses that suit the body are listed first; incompatible pairs cannot be
+ * selected, and adapted pairs explain their limitations.
  */
 import { useMemo, useState } from 'react';
 import {
-  CAMERAS, checkCompatibility, lensById, compatibleLenses, gearLabel,
-  isVariableAperture, CATALOGUE_DISCLAIMER,
+  CAMERAS, checkCompatibility, compatibleLenses, gearLabel, isFixedMount,
+  isVariableAperture, type Compatibility, type LensProfile,
 } from '../data/catalogue';
 import { formatAperture } from '../engine/settings';
 import { useStore } from '../state/store';
@@ -19,6 +20,8 @@ const LIMIT_KEYS = {
   'no-stabilisation-link': 'limitNoStab',
 } as const;
 
+const COMPAT_ORDER: Record<Compatibility['status'], number> = { native: 1, adapter: 2, incompatible: 3 };
+
 export function GearPicker() {
   const { state, dispatch, camera, lens } = useStore();
   const { t } = useI18n();
@@ -30,19 +33,32 @@ export function GearPicker() {
     return CAMERAS.filter((c) => !q || `${c.manufacturer} ${c.model} ${c.system}`.toLowerCase().includes(q));
   }, [camQuery]);
 
+  const fixedBody = isFixedMount(camera.mount);
+
   const lensOptions = useMemo(() => {
     const q = lensQuery.trim().toLowerCase();
-    return compatibleLenses(camera).filter(
-      ({ lens: l }) => !q || `${l.manufacturer} ${l.model} ${l.category}`.toLowerCase().includes(q),
-    );
-  }, [camera, lensQuery]);
+    const suggested = new Set([camera.kitLensId, ...(camera.suggestedLensIds ?? [])]);
+    const rank = (l: LensProfile, cp: Compatibility) =>
+      (suggested.has(l.id) ? 0 : COMPAT_ORDER[cp.status]);
+    return compatibleLenses(camera)
+      // A fixed-lens camera can only ever use its own lens; listing every
+      // other lens as "not compatible" would just be noise.
+      .filter(({ compat: cp }) => !fixedBody || cp.status !== 'incompatible')
+      .filter(({ lens: l }) => !q || `${l.manufacturer} ${l.model} ${l.category}`.toLowerCase().includes(q))
+      .sort((a, b) => rank(a.lens, a.compat) - rank(b.lens, b.compat));
+  }, [camera, lensQuery, fixedBody]);
+
+  const lensTag = (l: LensProfile): string => {
+    if (l.id === camera.kitLensId) return ` — ${t(fixedBody ? 'builtInLens' : 'kitLens')}`;
+    if (camera.suggestedLensIds?.includes(l.id)) return ` — ${t('suggestedLens')}`;
+    return '';
+  };
 
   const compat = checkCompatibility(lens, camera);
 
   return (
     <div className="card" data-testid="gear-picker">
       <h3>{t('camera')} &amp; {t('lens')}</h3>
-      <p className="notice" style={{ fontSize: '0.82rem' }}>{t('educationalApprox')}</p>
 
       <label htmlFor="camera-search">{t('chooseCamera')}</label>
       <input
@@ -73,15 +89,19 @@ export function GearPicker() {
         {t('isoRange')}: {camera.isoMin}–{camera.isoMax}
       </p>
 
-      <label htmlFor="lens-search">{t('chooseLens')}</label>
-      <input
-        id="lens-search"
-        type="search"
-        placeholder={t('searchLenses')}
-        value={lensQuery}
-        onChange={(e) => setLensQuery(e.target.value)}
-        style={{ width: '100%', margin: '0.3rem 0' }}
-      />
+      {!fixedBody && (
+        <>
+          <label htmlFor="lens-search">{t('chooseLens')}</label>
+          <input
+            id="lens-search"
+            type="search"
+            placeholder={t('searchLenses')}
+            value={lensQuery}
+            onChange={(e) => setLensQuery(e.target.value)}
+            style={{ width: '100%', margin: '0.3rem 0' }}
+          />
+        </>
+      )}
       <select
         aria-label={t('chooseLens')}
         data-testid="lens-select"
@@ -93,7 +113,7 @@ export function GearPicker() {
         {lensOptions.map(({ lens: l, compat: cp }) => (
           <option key={l.id} value={l.id} disabled={cp.status === 'incompatible'}>
             {gearLabel(l)}
-            {l.id === camera.kitLensId ? ` — ${t('kitLens')}` : ''}
+            {lensTag(l)}
             {cp.status === 'incompatible' ? ` — ${t('incompatible')}` : cp.status === 'adapter' ? ` — ${t('viaAdapter')}` : ''}
           </option>
         ))}
@@ -114,13 +134,6 @@ export function GearPicker() {
             .replace('{tele}', `${formatAperture(lens.maxApertureTele ?? lens.maxAperture)} ${t('atFocal')} ${lens.maxFocal}mm`)}
         </p>
       )}
-      {compat.status === 'native' && (
-        <p className="notice success" role="status">{t('native')}: {lensById(state.lensId).model}</p>
-      )}
-      <details>
-        <summary style={{ cursor: 'pointer', fontSize: '0.85rem' }}>{t('independentNote').slice(0, 40)}…</summary>
-        <p style={{ fontSize: '0.8rem', color: 'var(--fg-dim)' }}>{CATALOGUE_DISCLAIMER}</p>
-      </details>
     </div>
   );
 }

@@ -49,8 +49,8 @@
     },
     {
       "path": "/my-camera",
-      "title": "Use My Camera — Optional Live Exposure Preview | Tatu Exposure Lab",
-      "description": "An optional mode that shows a simulated exposure preview over your own camera image. Permission is only requested when you press the button; nothing is uploaded."
+      "title": "Connect a Camera — Live Preview over USB-C or HDMI | Tatu Exposure Lab",
+      "description": "Plug in a camera over USB-C webcam mode or an HDMI capture device to see a live preview and adjust the settings it exposes to the browser. Nothing is recorded or uploaded."
     },
     {
       "path": "/accessibility",

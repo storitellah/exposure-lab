@@ -39,8 +39,10 @@ export interface CameraProfile {
   bodyStyle: string;
   releaseStatus: string;
   dataSource: string;
-  /** The lens this body is normally sold with, selected automatically. */
+  /** The lens this body is normally sold with (or its built-in lens). */
   kitLensId?: string;
+  /** Lenses worth trying first on this body; listed at the top of the picker. */
+  suggestedLensIds?: string[];
 }
 
 export interface LensProfile {
@@ -185,7 +187,17 @@ const COVERAGE_DIAG: Record<LensProfile['coverage'], number> = {
  * Decide whether a lens fits a body. "generic" mounts fit everything so the
  * Generic Camera and Custom Lens always work.
  */
+/** Built-in lenses use a `fixed-` mount that only ever matches its own body. */
+export function isFixedMount(mount: string): boolean {
+  return mount.startsWith('fixed-');
+}
+
 export function checkCompatibility(lens: LensProfile, cam: CameraProfile): Compatibility {
+  // A fixed-lens camera (X100VI, ZX1) takes nothing but its own lens, and a
+  // built-in lens cannot be removed and put on anything else.
+  if (isFixedMount(cam.mount) || isFixedMount(lens.mount)) {
+    return lens.mount === cam.mount ? { status: 'native' } : { status: 'incompatible', reason: 'mount' };
+  }
   if (lens.mount === 'generic' || cam.mount === 'generic') return { status: 'native' };
 
   // A lens whose image circle is far smaller than the sensor cannot cover it.
@@ -212,6 +224,11 @@ export function checkCompatibility(lens: LensProfile, cam: CameraProfile): Compa
     return { status: 'adapter', adapter: { ...adapter, limitations: [...adapter.limitations, 'crop-mode'] } };
   }
   return { status: 'adapter', adapter };
+}
+
+/** The lens to fit when switching to a body whose current lens will not mount. */
+export function preferredLensFor(cam: CameraProfile): string {
+  return cam.kitLensId ?? cam.suggestedLensIds?.[0] ?? 'generic-50';
 }
 
 export function compatibleLenses(cam: CameraProfile): { lens: LensProfile; compat: Compatibility }[] {

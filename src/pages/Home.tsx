@@ -1,10 +1,11 @@
-/** Home: hero, first-launch onboarding, mode cards and progress. */
+/** Home: what the lab is, where to start, and earned progress. */
 import { useEffect, useRef, useState } from 'react';
 import { Link } from '../router';
 import { useI18n } from '../i18n';
 import { useStore } from '../state/store';
 import { Wordmark } from '../components/Wordmark';
-import { TriangleAnimation } from '../components/TriangleAnimation';
+import { StoritellahLink } from '../components/StoritellahLink';
+import { LESSONS } from '../data/lessons';
 
 const BADGE_KEYS = {
   'aperture-explorer': 'badgeApertureExplorer',
@@ -34,62 +35,65 @@ export default function Home() {
 
   const steps = [
     { title: t('onboardingWelcome'), body: t('tatuMeaning') },
-    { title: t('onboardingMeet'), body: `${t('aperture')} · ${t('shutterSpeed')} · ${t('iso')}` },
-    { title: t('onboardingChooseMode'), body: `${t('guidedMode')} / ${t('freeMode')}` },
-    { title: t('onboardingPhotoVideo'), body: `${t('photography')} / ${t('video')}` },
-    { title: t('onboardingFirstShot'), body: t('tagline') },
+    { title: t('onboardingMeet'), body: null },
+    { title: t('onboardingFirstShot'), body: t('onboardingFirstShotBody') },
   ];
   const step = steps[Math.min(onboardStep, steps.length - 1)];
+  const earned = Object.entries(BADGE_KEYS).filter(([id]) => state.progress.badges.includes(id));
 
   return (
     <div>
       <section className="home-hero">
         <Wordmark size={72} />
-        <h1>{t('appName')} <span style={{ fontSize: '0.5em', color: 'var(--fg-dim)' }}>{t('byStoritellah')}</span></h1>
+        <h1>
+          {t('appName')}{' '}
+          <span className="home-by">{t('byPrefix')} <StoritellahLink /></span>
+        </h1>
         <p className="tagline">{t('tagline')}</p>
         <p style={{ maxWidth: '560px', margin: '0 auto' }}>{t('tatuMeaning')}</p>
-        <TriangleAnimation />
       </section>
 
       <section className="mode-cards">
         <Link to="/learn" className="card" ariaLabel={t('guidedMode')}>
-          <h2>📗 {t('guidedMode')}</h2>
-          <p>{t('lessonProgress')}: {state.progress.completedLessons.length}/12</p>
+          <h2>{t('guidedMode')}</h2>
+          <p>{t('homeLearnCard')}</p>
+          <p className="home-progress">{t('lessonProgress')}: {state.progress.completedLessons.length}/{LESSONS.length}</p>
         </Link>
         <Link to="/simulator" className="card" ariaLabel={t('freeMode')}>
-          <h2>📷 {t('freeMode')}</h2>
-          <p>{t('tagline')}</p>
+          <h2>{t('freeMode')}</h2>
+          <p>{t('homeSimulatorCard')}</p>
         </Link>
         <Link to="/video" className="card" ariaLabel={t('videoSimulator')}>
-          <h2>🎬 {t('videoSimulator')}</h2>
-          <p>{t('angleRule')}</p>
+          <h2>{t('videoSimulator')}</h2>
+          <p>{t('homeVideoCard')}</p>
         </Link>
         <Link to="/challenges" className="card" ariaLabel={t('challenges')}>
-          <h2>🏆 {t('challenges')}</h2>
-          <p>{t('dailyChallenge')}</p>
+          <h2>{t('challenges')}</h2>
+          <p>{t('homeChallengesCard')}</p>
         </Link>
       </section>
 
-      {state.prefs.gamification && (
+      {state.prefs.gamification && (earned.length > 0 || state.progress.streakDays > 0) && (
         <section style={{ marginTop: '1.5rem' }}>
           <h2>{t('badges')}</h2>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            {Object.entries(BADGE_KEYS).map(([id, key]) => (
-              <span key={id} className={`badge-chip ${state.progress.badges.includes(id) ? '' : 'locked'}`}>
-                ★ {t(key)}
-              </span>
-            ))}
+            {earned.map(([id, key]) => <span key={id} className="badge-chip">★ {t(key)}</span>)}
           </div>
-          {state.progress.streakDays > 0 && (
-            <p>{t('streak')}: {state.progress.streakDays} {t('days')}</p>
-          )}
+          {state.progress.streakDays > 0 && <p>{t('streak')}: {state.progress.streakDays} {t('days')}</p>}
         </section>
       )}
 
       <dialog ref={dialogRef} aria-label={t('onboardingWelcome')} data-testid="onboarding">
         <h2>{step?.title}</h2>
-        <p>{step?.body}</p>
-        {onboardStep === 1 && <TriangleAnimation />}
+        {step?.body ? (
+          <p>{step.body}</p>
+        ) : (
+          <ul className="onboard-three">
+            <li><span style={{ background: '#FBB03B' }} aria-hidden="true" /><strong>{t('aperture')}</strong> — {t('triRoleAperture')}</li>
+            <li><span style={{ background: '#3C82F6' }} aria-hidden="true" /><strong>{t('shutterSpeed')}</strong> — {t('triRoleShutter')}</li>
+            <li><span style={{ background: '#2E9B62' }} aria-hidden="true" /><strong>ISO</strong> — {t('triRoleIso')}</li>
+          </ul>
+        )}
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           {onboardStep > 0 && (
             <button type="button" className="btn" onClick={() => setOnboardStep(onboardStep - 1)}>{t('back')}</button>

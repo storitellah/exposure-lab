@@ -6,8 +6,9 @@ import { FULL_FRAME, equivalentFocal } from './optics';
 import { PRINT_FORMATS, printableAreaMm, fitImageToPage } from './printsizes';
 import {
   CAMERAS, LENSES, checkCompatibility, cameraById, lensById, limitsOf,
-  sensorOf, maxApertureAt, isVariableAperture,
+  sensorOf, maxApertureAt, isVariableAperture, isFixedMount, preferredLensFor,
 } from '../data/catalogue';
+import { GLOSSARY, CATEGORY_LABELS } from '../data/glossary';
 import { CHALLENGES, CHALLENGE_IDS } from '../data/challenges';
 import { LESSONS } from '../data/lessons';
 import { SCENES, SCENE_IDS, sceneById, startSettingsFor } from '../scenes/scenes';
@@ -162,8 +163,8 @@ describe('camera & lens catalogue', () => {
     if (pl.status === 'adapter') expect(pl.adapter.limitations).toContain('manual-focus-only');
   });
 
-  it('generic camera accepts every lens', () => {
-    for (const lens of LENSES) {
+  it('generic camera accepts every interchangeable lens', () => {
+    for (const lens of LENSES.filter((l) => !isFixedMount(l.mount))) {
       expect(checkCompatibility(lens, cameraById('generic')).status).not.toBe('incompatible');
     }
   });
@@ -265,6 +266,89 @@ describe('Canon EOS R100 and its kit lens', () => {
     expect(equivalentFocal(kit.minFocal, sensor)).toBeCloseTo(29, 0);
     expect(equivalentFocal(kit.maxFocal, sensor)).toBeGreaterThan(71);
     expect(equivalentFocal(kit.maxFocal, sensor)).toBeLessThan(74);
+  });
+});
+
+describe('Nikon Z50 II, Fujifilm bodies and Viltrox primes', () => {
+  it('pairs the Z50 II with the NIKKOR Z DX 16-50mm kit lens', () => {
+    const z50 = cameraById('nikon-z50ii');
+    const kit = lensById('nikkor-z-dx-16-50');
+    expect(z50.kitLensId).toBe(kit.id);
+    expect(checkCompatibility(kit, z50).status).toBe('native');
+    expect(isVariableAperture(kit)).toBe(true);
+    expect(maxApertureAt(kit, 16)).toBeCloseTo(3.5, 1);
+    expect(maxApertureAt(kit, 50)).toBeCloseTo(6.3, 1);
+    expect(preferredLensFor(z50)).toBe(kit.id);
+  });
+
+  it('mounts both Viltrox f/1.2 primes natively on the X-T4 and X-T5', () => {
+    for (const camId of ['fujifilm-xt4', 'fujifilm-xt5']) {
+      const cam = cameraById(camId);
+      expect(cam.suggestedLensIds).toEqual(['viltrox-27-12-xf', 'viltrox-75-12-xf']);
+      for (const lensId of cam.suggestedLensIds ?? []) {
+        const lens = lensById(lensId);
+        expect(lens.maxAperture).toBe(1.2);
+        expect(checkCompatibility(lens, cam).status).toBe('native');
+      }
+      expect(limitsOf(cam, lensById('viltrox-27-12-xf')).minAperture).toBe(1.2);
+    }
+  });
+
+  it('keeps the Viltrox X-mount primes off other mounts', () => {
+    expect(checkCompatibility(lensById('viltrox-75-12-xf'), cameraById('nikon-z50ii')).status).toBe('incompatible');
+  });
+
+  it('treats the X100VI as a fixed-lens camera', () => {
+    const x100 = cameraById('fujifilm-x100vi');
+    const builtIn = lensById('fujinon-x100vi-23');
+    expect(isFixedMount(x100.mount)).toBe(true);
+    expect(checkCompatibility(builtIn, x100).status).toBe('native');
+    expect(preferredLensFor(x100)).toBe(builtIn.id);
+    for (const lens of LENSES.filter((l) => l.id !== builtIn.id)) {
+      expect(checkCompatibility(lens, x100).status).toBe('incompatible');
+    }
+    // The built-in lens cannot be moved to another body either.
+    expect(checkCompatibility(builtIn, cameraById('fujifilm-xt5')).status).toBe('incompatible');
+    expect(checkCompatibility(builtIn, cameraById('generic')).status).toBe('incompatible');
+  });
+
+  it('gives the Zeiss ZX1 its own built-in 35mm lens', () => {
+    const zx1 = cameraById('zeiss-zx1');
+    expect(preferredLensFor(zx1)).toBe('zeiss-zx1-35');
+    expect(checkCompatibility(lensById('generic-50'), zx1).status).toBe('incompatible');
+  });
+
+  it('every kit and suggested lens exists and fits its camera', () => {
+    for (const cam of CAMERAS) {
+      for (const id of [cam.kitLensId, ...(cam.suggestedLensIds ?? [])].filter(Boolean) as string[]) {
+        expect(LENSES.some((l) => l.id === id), `${cam.id} → ${id}`).toBe(true);
+        expect(checkCompatibility(lensById(id), cam).status, `${cam.id} → ${id}`).not.toBe('incompatible');
+      }
+    }
+  });
+});
+
+describe('glossary', () => {
+  it('has a long list of unique, fully translated entries', () => {
+    expect(GLOSSARY.length).toBeGreaterThanOrEqual(80);
+    const ids = new Set(GLOSSARY.map((e) => e.id));
+    expect(ids.size).toBe(GLOSSARY.length);
+    for (const e of GLOSSARY) {
+      expect(e.id).toMatch(/^[a-z0-9-]+$/);
+      expect(CATEGORY_LABELS[e.category]).toBeDefined();
+      for (const field of [e.term, e.simple, e.advanced]) {
+        expect(field.en.trim().length, e.id).toBeGreaterThan(0);
+        expect(field.sw.trim().length, e.id).toBeGreaterThan(0);
+      }
+      // The in-depth text should add something beyond the plain version.
+      expect(e.advanced.en).not.toBe(e.simple.en);
+    }
+  });
+
+  it('covers every topic', () => {
+    for (const cat of Object.keys(CATEGORY_LABELS)) {
+      expect(GLOSSARY.some((e) => e.category === cat), cat).toBe(true);
+    }
   });
 });
 

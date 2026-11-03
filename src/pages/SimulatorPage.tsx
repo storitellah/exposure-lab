@@ -18,7 +18,7 @@ export default function SimulatorPage() {
           📷 {t('camera')} &amp; {t('lens')}
         </button>
         <button type="button" className="btn" onClick={() => setShowKeys(!showKeys)}>⌨ {t('keyboardHelp')}</button>
-        <Link to="/my-camera" className="btn">📱 {t('useMyCamera')}</Link>
+        <Link to="/my-camera" className="btn">🔌 {t('useMyCamera')}</Link>
       </div>
 
       {showGear && <div style={{ marginBottom: '1rem' }}><GearPicker /></div>}

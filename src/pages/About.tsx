@@ -1,6 +1,7 @@
 /** About page: the name, the mission, the disclaimer. */
 import { useI18n } from '../i18n';
 import { Wordmark } from '../components/Wordmark';
+import { StoritellahLink } from '../components/StoritellahLink';
 import { CATALOGUE_VERSION } from '../data/catalogue';
 import { APP_VERSION } from '../version';
 
@@ -12,7 +13,7 @@ export default function About() {
       <p style={{ textAlign: 'center' }}><Wordmark size={80} /></p>
       <p>{t('tatuMeaning')}</p>
       <p>
-        Tatu Exposure Lab by Storitellah is an interactive exposure triangle simulator for
+        Tatu Exposure Lab by <StoritellahLink /> is an interactive exposure triangle simulator for
         young photographers, photography students, teachers, beginners and visual
         storytellers. It teaches how aperture, shutter speed and ISO work — independently
         and together — through direct experimentation: every change you make produces a

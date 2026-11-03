@@ -320,10 +320,11 @@ a.card:hover h2, a.card:hover h3 { color: var(--yellow); }
 .simulator-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
-  grid-template-areas: 'preview controls' 'shutter controls';
+  grid-template-areas: 'preview controls' 'shutter controls' 'triangle triangle';
   gap: 1rem;
   align-items: start;
 }
+.sim-triangle { grid-area: triangle; }
 .simulator-grid > * { min-width: 0; }
 .sim-preview { grid-area: preview; }
 .control-panel { grid-area: controls; }
@@ -463,9 +464,12 @@ input[type='range'] {
   min-height: 3.2em;
 }
 
-/* triangle animation */
-.triangle-anim { display: flex; gap: 1rem; align-items: center; justify-content: center; }
-.aperture-blades { transition: r 0.25s ease; }
+/* home */
+.home-by { font-size: 0.5em; color: var(--fg-dim); white-space: nowrap; }
+.home-progress { font-size: 0.88rem; color: var(--fg-dim); margin-bottom: 0; }
+.onboard-three { list-style: none; padding: 0; display: grid; gap: 0.6rem; }
+.onboard-three li { display: flex; gap: 0.5rem; align-items: baseline; }
+.onboard-three span { flex: 0 0 12px; height: 12px; border-radius: 50%; display: inline-block; }
 
 /* gallery */
 .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.8rem; }
@@ -509,6 +513,49 @@ table.data th { background: var(--bg-3); }
 .home-hero .tagline { font-size: 1.2rem; color: var(--fg-dim); font-weight: 600; }
 .mode-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
 
+/* ---------- exposure triangle ---------- */
+
+.tri-title { font-size: 1.25rem; margin-bottom: 0.2rem; }
+.tri-caption { color: var(--fg-dim); font-size: 0.92rem; margin: 0 0 0.8rem; }
+.tri-body {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: center;
+}
+.tri-svg { width: 100%; max-width: 300px; height: auto; color: var(--fg); justify-self: center; }
+.tri-value { font-family: var(--font-display); font-weight: 800; font-size: 13px; fill: #171717; }
+.tri-edge { font-size: 10.5px; fill: currentColor; opacity: 0.75; text-anchor: middle; }
+.tri-verdict { font-size: 22px; }
+.tri-verdict.ok { fill: var(--success-text); }
+.tri-verdict.over { fill: var(--warning-text); }
+.tri-verdict.under { fill: var(--accent-text); }
+.tri-verdict-text { font-family: var(--font-display); font-weight: 700; font-size: 14px; fill: currentColor; }
+.tri-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+.tri-legend li { display: flex; gap: 0.6rem; align-items: flex-start; }
+.tri-legend strong { font-family: var(--font-display); display: block; }
+.tri-swatch { flex: 0 0 14px; height: 14px; border-radius: 50%; margin-top: 0.3rem; }
+.tri-role, .tri-line { display: block; font-size: 0.88rem; }
+.tri-role { color: var(--fg-dim); }
+.tri-pips { display: inline-flex; gap: 3px; vertical-align: middle; margin-left: 0.3rem; }
+.tri-pips span { width: 10px; height: 10px; border-radius: 50%; border: 2px solid; }
+.tri-alts { margin-top: 1rem; border-top: 1px solid var(--line); padding-top: 0.8rem; }
+.tri-alts h3 { margin-bottom: 0.2rem; }
+.tri-alts ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.tri-alts li {
+  display: grid;
+  grid-template-columns: minmax(0, 13rem) minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+}
+.tri-alt-values { font-family: var(--font-display); font-weight: 700; font-variant-numeric: tabular-nums; }
+.tri-alt-effect { font-size: 0.9rem; color: var(--fg-dim); }
+@media (max-width: 700px) {
+  .tri-body { grid-template-columns: minmax(0, 1fr); }
+  .tri-alts li { grid-template-columns: minmax(0, 1fr) auto; }
+  .tri-alt-effect { grid-column: 1 / -1; grid-row: 2; }
+}
+
 /* Static boot content in index.html, replaced by React on mount. Visible
    only while loading, or if the app files failed to load at all. */
 .boot-fallback {
@@ -526,6 +573,32 @@ table.data th { background: var(--bg-3); }
 
 .content-page { max-width: 760px; margin: 0 auto; }
 
+/* ---------- glossary ---------- */
+.glossary-tools { display: grid; gap: 0.6rem; margin-bottom: 1rem; }
+.glossary-tools input[type='search'] { width: 100%; min-height: 44px; }
+.glossary-cats { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip {
+  min-height: 36px; padding: 0.3rem 0.8rem; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--bg-3); color: var(--fg);
+  font: inherit; font-size: 0.88rem; cursor: pointer;
+}
+.chip.active { background: var(--yellow); border-color: var(--yellow); color: var(--dark); font-weight: 600; }
+.chip:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.glossary-count { margin: 0; color: var(--fg-dim); font-size: 0.85rem; }
+.glossary h2 { margin-top: 1.6rem; }
+.glossary-list { margin: 0; }
+.glossary-entry { margin-bottom: 0.6rem; scroll-margin-top: 5rem; }
+.glossary-entry:target { border-color: var(--yellow); }
+.glossary-entry dt { font-weight: 700; font-size: 1.05rem; }
+.glossary-entry dd { margin: 0.3rem 0 0; }
+.glossary-entry dd p { margin: 0.35rem 0 0; }
+.glossary-label {
+  display: inline-block; margin-right: 0.35rem; padding: 0 0.45rem; border-radius: 4px;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+  background: var(--success); color: var(--dark); vertical-align: 0.1em;
+}
+.glossary-label.depth { background: var(--accent); }
+
 /* ---------- responsive ---------- */
 
 @media (max-width: 900px) {
@@ -533,7 +606,7 @@ table.data th { background: var(--bg-3); }
      bottom of the screen so it stays within thumb reach one-handed. */
   .simulator-grid {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'preview' 'controls' 'shutter';
+    grid-template-areas: 'preview' 'controls' 'triangle' 'shutter';
   }
   .shutter-dock {
     position: sticky;
@@ -565,7 +638,7 @@ table.data th { background: var(--bg-3); }
 @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
   .simulator-grid {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    grid-template-areas: 'preview controls' 'shutter controls';
+    grid-template-areas: 'preview controls' 'shutter controls' 'triangle triangle';
   }
 }
 

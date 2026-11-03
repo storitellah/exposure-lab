@@ -10,6 +10,7 @@ import { APP_VERSION } from '../version';
 import { getInstallPrompt, onInstallAvailable, clearInstallPrompt } from '../utils/device';
 import { onServiceWorkerUpdate } from '../sw-registration';
 import { Wordmark } from './Wordmark';
+import { StoritellahLink } from './StoritellahLink';
 
 export function Layout({ children }: { children: ReactNode }) {
   const { t, lang, setLang } = useI18n();
@@ -118,8 +119,7 @@ export function Layout({ children }: { children: ReactNode }) {
 
       <footer className="app-footer">
         <p>
-          <strong>{t('appName')} {t('byStoritellah')}</strong> — {t('tagline')}<br />
-          {t('footerRights')}
+          <strong>{t('appName')}</strong> {t('byPrefix')} <StoritellahLink /> — {t('tagline')}
         </p>
         <nav aria-label="Footer">
           <Link to="/privacy">{t('navPrivacy')}</Link>
@@ -130,11 +130,11 @@ export function Layout({ children }: { children: ReactNode }) {
           <Link to="/about">{t('navAbout')}</Link>
         </nav>
         <p>
-          © {new Date().getFullYear()} Storitellah · {t('version')} {APP_VERSION} ·{' '}
+          © {new Date().getFullYear()} <StoritellahLink /> · {t('version')} {APP_VERSION} ·{' '}
           <span className={`status-dot ${online ? 'online' : 'offline'}`} aria-hidden="true" />
           <span data-testid="online-status">{online ? t('online') : t('offline')}</span>
         </p>
-        <p style={{ fontSize: '0.78rem' }}>{t('independentNote')}</p>
+        <p style={{ fontSize: '0.78rem' }}>{t('independentShort')}</p>
       </footer>
 
       <dialog ref={settingsRef} aria-label={t('settings')}>

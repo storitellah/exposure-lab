@@ -13,6 +13,13 @@ and together, for both photo and video.
 - English + Kiswahili, switchable without reload
 - Guided lessons, free simulator, challenges, video exposure mode,
   local gallery, print studio, teacher mode
+- A live exposure-triangle diagram under the simulator: how much light each
+  setting contributes, what each one is doing to the picture, and
+  same-brightness alternatives you can apply with one tap
+- Connect a real camera over USB-C (webcam mode) or HDMI (capture card) for
+  a live preview, with setting control where the device allows it
+- A glossary of 100+ photo and video terms, each explained in plain words
+  and in depth, searchable in both languages
 
 > Tatu Exposure Lab is an independent educational tool. It is not sponsored by
 > or affiliated with any camera or lens manufacturer named in the app. Names
@@ -167,7 +174,15 @@ Two optional fields are worth knowing about:
 - A camera's `kitLensId` names the lens it ships with. That lens is marked
   "kit lens" in the picker and is chosen automatically when you switch to a
   body whose current lens does not fit — e.g. the Canon EOS R100 comes with
-  the RF-S 18-45mm F4.5-6.3 IS STM.
+  the RF-S 18-45mm F4.5-6.3 IS STM and the Nikon Z50 II with the NIKKOR Z DX
+  16-50mm f/3.5-6.3 VR.
+- `suggestedLensIds` lists lenses to show first for a body without a kit
+  lens. The Fujifilm X-T4 and X-T5 suggest the Viltrox AF 27mm and 75mm
+  F1.2 XF primes.
+- Fixed-lens cameras (Fujifilm X100VI, Zeiss ZX1) use a mount id starting
+  with `fixed-` and a matching built-in lens. A `fixed-` mount only ever
+  pairs with a lens of the identical mount, so no other lens can be chosen
+  and the built-in lens cannot be moved to another body.
 - A lens's `maxApertureTele` is its widest aperture at the long end of the
   zoom. Set it on kit zooms and the simulator models the aperture narrowing
   as you zoom in (f/4.5 at 18mm but only f/6.3 at 45mm), closing the aperture
@@ -227,17 +242,18 @@ e2e/               Playwright browser tests
 
 | Suite | Result |
 |---|---|
-| `npm test` (Vitest, 58 tests) | ✅ all pass |
-| `npx playwright test` (50 tests, desktop + mobile projects) | ✅ all pass |
+| `npm test` (Vitest, 77 tests) | ✅ all pass |
+| `npx playwright test` (58 tests, desktop + mobile projects) | ✅ all pass |
 | `npm run typecheck` (strict TS) | ✅ clean |
 | `npm run lint` (ESLint + react-hooks/compiler rules) | ✅ 0 errors, 0 warnings |
-| `npm audit` | ✅ 0 vulnerabilities |
-| `npm run build` | ✅ ~66 kB gzipped entry chunk |
+| `npm audit --omit=dev` (shipped dependencies) | ✅ 0 vulnerabilities — newer advisories exist only in dev tooling (e.g. `zod` via the ESLint hooks plugin) and never reach the built app |
+| `npm run build` | ✅ ~77 kB gzipped entry chunk |
 
 ### Lighthouse
 
 Measured against the production build (`npm run build && npm run preview`),
-Chromium headless. Mobile is Lighthouse's default throttled profile.
+Chromium headless, before the exposure-triangle panel, glossary rewrite and
+camera-connection page were added — re-run after deploying. Mobile is Lighthouse's default throttled profile.
 
 | Page | Profile | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|---|
@@ -256,7 +272,9 @@ Scores are environment-sensitive; re-run with
 Unit tests cover the exposure equation and stop arithmetic, aperture/shutter/ISO
 changes, depth of field, crop factor, field of view, shutter angle, auto-exposure
 solving, noise, lens/body compatibility, challenge scoring, challenge-URL parsing,
-input sanitisation and print dimensions — plus content invariants: every scene
+input sanitisation and print dimensions, kit and suggested lens pairings,
+fixed-lens bodies (X100VI, ZX1) refusing every other lens, and glossary
+completeness in both languages — plus content invariants: every scene
 opens within ⅓ stop of a correct exposure, and every lesson is neither
 pre-solved nor unsolvable at its starting point.
 
@@ -264,7 +282,10 @@ Browser tests cover taking, keeping, deleting, downloading and printing a
 photograph; changing body and lens (including rejecting an incompatible lens
 and explaining an adapter); completing a lesson; opening and validating
 challenge links; scoring a challenge; keyboard control; camera-permission
-denial; language switching; clearing local data; the 180° shutter-angle rule;
+denial; connecting a (fake) video device, live preview and disconnect; applying
+an equal-light alternative from the exposure triangle; glossary search in
+English and Kiswahili; language switching; clearing local data; the 180°
+shutter-angle rule;
 and no horizontal scrolling at all nine required viewport sizes plus landscape.
 
 ## Deployment checklist
@@ -285,7 +306,7 @@ and no horizontal scrolling at all nine required viewport sizes plus landscape.
    - the app installs as a PWA and still works with the network disabled;
    - the shutter button takes a photograph and the gallery persists it;
    - a challenge link opens the right scene, and a malformed one is rejected;
-   - camera permission is only requested by the "Use My Camera" button.
+   - camera permission is only requested by the "Connect camera" button.
 9. Bump `VERSION` in `public/sw.js` and `APP_VERSION` in `src/version.ts` for
    the next release so returning users get the update prompt.
 
@@ -302,9 +323,23 @@ and no horizontal scrolling at all nine required viewport sizes plus landscape.
 - **Safari/iOS**: `beforeinstallprompt` does not exist, so the in-app
   "Install app" button is hidden — installing is done through Share → Add to
   Home Screen. `navigator.share` is used where present.
-- **Device camera** exposes no real aperture/shutter/ISO control to web pages
-  on any browser, so "Use My Camera" clearly labels its exposure preview as
-  simulated rather than pretending to drive the hardware.
+- **Connecting a real camera** (page "Connect a camera"). A camera reaches
+  the browser as a video device: over USB-C in its webcam/UVC mode, or over
+  HDMI through a USB capture card. The page shows a live preview, lets you
+  pick the source, and offers exposure time, ISO, exposure compensation,
+  focus, white balance and zoom controls **only when the device reports it
+  accepts them** (W3C Media Capture "image" constraints via
+  `getCapabilities()` / `applyConstraints()`, mainly Chromium). Limits:
+  - no browser API can set **aperture**; it stays on the camera;
+  - **HDMI is video-only** — a capture card carries no control signal back,
+    so over HDMI the preview works but the settings are changed on the camera;
+  - most cameras in webcam mode report few or no controls; the page then
+    says so instead of showing sliders that do nothing;
+  - full tethered control (PTP over USB, as in vendor tethering apps) would
+    need WebUSB and a camera-protocol driver, Chromium-only, and loosening the
+    `usb=()` Permissions-Policy. That is deliberately not done.
+  An optional overlay previews the simulator's settings as a brightness
+  change on the live image, and is labelled as simulated.
 - **`navigator.vibrate`** is ignored on iOS; capture haptics are silently
   skipped there.
 - **Private browsing** can block IndexedDB. Saving a photograph then reports

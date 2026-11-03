@@ -35,9 +35,12 @@ them.
 
 ## The optional device camera
 
-"Use My Camera" requests camera permission only after a direct button press,
-processes frames locally for an educational exposure preview, and never
-records, stores or transmits them. Refusing permission disables nothing else.
+"Connect a camera" requests camera permission only after a direct button
+press. It shows the connected device's live video (a USB-C camera in webcam
+mode, an HDMI capture card, or a built-in camera) and can send setting changes
+to that device. Frames are shown locally only and are never recorded, stored or
+transmitted. The list of video sources shows device names reported by your
+browser; these are not stored. Refusing permission disables nothing else.
 
 ## Exports
 

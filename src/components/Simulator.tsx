@@ -6,7 +6,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   APERTURES, SHUTTERS, ISOS, formatAperture, formatShutter,
-  type ExposureSettings, type ShootMode, type WhiteBalance, type Metering, type Drive,
+  type ExposureSettings, type ShootMode, type WhiteBalance,
 } from '../engine/settings';
 import { meterReading, describeStopChange, settingsEV100 } from '../engine/exposure';
 import { resolveExposure } from '../engine/autoexposure';
@@ -27,6 +27,7 @@ import { captureScene, type CaptureResult } from '../utils/capture';
 import { playShutterSound } from '../utils/audio';
 import { haptic, detectDefaultQuality } from '../utils/device';
 import { ControlSlider } from './ControlSlider';
+import { ExposureTriangle } from './ExposureTriangle';
 
 export interface SimulatorProps {
   video?: boolean;
@@ -58,10 +59,12 @@ export function Simulator({
   const prevRef = useRef<ExposureSettings>(state.settings);
 
   const quality = state.prefs.quality === 'auto' ? detectDefaultQuality() : state.prefs.quality;
-  const resolved = useMemo(
-    () => resolveExposure(scene.ev100, state.settings, limitsOf(camera, lens, state.settings.focalMm)),
-    [scene.ev100, state.settings, camera, lens],
-  );
+  // Stabilisation only helps if the body (IBIS) or lens (IS/VR/OIS) has it.
+  const hasStabilisation = camera.ibis || lens.stabilised;
+  const resolved = useMemo(() => {
+    const r = resolveExposure(scene.ev100, state.settings, limitsOf(camera, lens, state.settings.focalMm));
+    return { ...r, stabilisation: r.stabilisation && hasStabilisation };
+  }, [scene.ev100, state.settings, camera, lens, hasStabilisation]);
   const meter = meterReading(scene.ev100, {
     aperture: resolved.aperture, shutter: resolved.shutter, iso: resolved.iso,
     ndStops: resolved.ndStops, evComp: resolved.evComp,
@@ -70,6 +73,14 @@ export function Simulator({
   // A kit zoom cannot open as wide once it is zoomed in, so the aperture
   // control's range follows the focal length.
   const widestAperture = maxApertureAt(lens, resolved.focalMm);
+  const gearLimits = useMemo(() => ({
+    widestAperture,
+    narrowestAperture: lens.minAperture,
+    longestShutter: camera.mechShutterMin,
+    shortestShutter: 1 / Math.max(camera.mechShutterMax, camera.eShutterMax),
+    minIso: camera.isoExtMin,
+    maxIso: camera.isoExtMax,
+  }), [widestAperture, lens, camera]);
 
   const lockedControls = state.lockedControls;
   const allowed = useCallback(
@@ -409,22 +420,6 @@ export function Simulator({
                 </select>
               </label>
               <label>
-                {t('metering')}{' '}
-                <select value={state.settings.metering} onChange={(e) => update({ metering: e.target.value as Metering })}>
-                  <option value="matrix">{t('meterMatrix')}</option>
-                  <option value="centre">{t('meterCentre')}</option>
-                  <option value="spot">{t('meterSpot')}</option>
-                </select>
-              </label>
-              <label>
-                {t('driveMode')}{' '}
-                <select value={state.settings.drive} onChange={(e) => update({ drive: e.target.value as Drive })}>
-                  <option value="single">{t('driveSingle')}</option>
-                  <option value="continuous">{t('driveContinuous')}</option>
-                  <option value="timer">{t('driveTimer')}</option>
-                </select>
-              </label>
-              <label>
                 {t('ndFilter')}{' '}
                 <select value={state.settings.ndStops} onChange={(e) => update({ ndStops: Number(e.target.value) })}>
                   <option value={0}>—</option>
@@ -434,21 +429,39 @@ export function Simulator({
                 </select>
               </label>
               <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                <input type="checkbox" checked={state.settings.stabilisation} onChange={(e) => update({ stabilisation: e.target.checked })} />
-                {t('stabilisation')} {camera.ibis || lens.stabilised ? '' : '(—)'}
+                <input
+                  type="checkbox"
+                  checked={hasStabilisation && state.settings.stabilisation}
+                  disabled={!hasStabilisation}
+                  onChange={(e) => update({ stabilisation: e.target.checked })}
+                />
+                {t('stabilisation')}{hasStabilisation ? '' : ` — ${t('notOnThisGear')}`}
               </label>
               <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
                 <input type="checkbox" checked={state.settings.flash} onChange={(e) => update({ flash: e.target.checked })} disabled={camera.flashSync === 0} />
                 {t('flash')}
               </label>
-              <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                <input type="checkbox" checked={state.settings.manualFocus} onChange={(e) => update({ manualFocus: e.target.checked })} disabled={!lens.af} />
-                {t('manualFocus')} {lens.af ? '' : `(${t('limitManualFocus')})`}
-              </label>
             </div>
           </details>
         )}
       </div>
+
+      {!compact && (
+        <div className="sim-triangle">
+          <ExposureTriangle
+            settings={resolved}
+            meter={meter}
+            sensor={sensor}
+            noiseProfile={camera.noise}
+            subjectSpeedPxPerS={scene.subjectSpeedPxPerS}
+            limits={gearLimits}
+            // Ready-made trades would hand over the answer in a lesson or
+            // challenge, and break the 180° rule in video, so they are only
+            // offered in the free simulator.
+            {...(!video && !challenge && !allowedControls ? { onApply: update } : {})}
+          />
+        </div>
+      )}
 
       {pending && (
         <ShotReviewDialog

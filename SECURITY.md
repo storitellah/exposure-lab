@@ -23,7 +23,7 @@ EXIF/GPS metadata** by construction.
 
 ## Camera permissions
 
-- Camera access exists only in the optional "Use My Camera" page, requested
+- Camera access exists only in the optional "Connect a camera" page, requested
   **only after a direct button press**, over secure contexts only.
 - Microphone is never requested (`audio: false` and disabled via
   Permissions-Policy). Streams are stopped when leaving the page.

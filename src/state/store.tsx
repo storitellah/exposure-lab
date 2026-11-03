@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { APERTURES, defaultSettings, type ExposureSettings } from '../engine/settings';
 import {
-  cameraById, lensById, type CameraProfile, type LensProfile, checkCompatibility, maxApertureAt,
+  cameraById, lensById, type CameraProfile, type LensProfile, checkCompatibility, maxApertureAt, preferredLensFor,
 } from '../data/catalogue';
 import {
   DEFAULT_PREFS, loadPrefs, savePrefs, type Prefs,
@@ -110,7 +110,7 @@ function reducer(state: AppState, action: Action): AppState {
       // Switching body: keep the current lens when it fits, otherwise reach
       // for the lens this body ships with before falling back to a generic.
       if (checkCompatibility(lensById(lensId), cam).status === 'incompatible') {
-        lensId = cam.kitLensId ?? 'generic-50';
+        lensId = preferredLensFor(cam);
       }
       const lens = lensById(lensId);
       return { ...state, cameraId: cam.id, lensId, settings: clampToGear(state.settings, cam, lens) };

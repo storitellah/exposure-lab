@@ -27,8 +27,6 @@ export const ISOS: number[] = [
 export const EV_COMP_RANGE = { min: -5, max: 5, step: 1 / 3 };
 
 export type ShootMode = 'M' | 'A' | 'S' | 'P';
-export type Metering = 'matrix' | 'centre' | 'spot';
-export type Drive = 'single' | 'continuous' | 'timer';
 export type WhiteBalance =
   | 'auto' | 'daylight' | 'cloudy' | 'shade' | 'tungsten' | 'fluorescent' | 'flash';
 
@@ -42,13 +40,10 @@ export interface ExposureSettings {
   mode: ShootMode;
   autoIso: boolean;
   whiteBalance: WhiteBalance;
-  metering: Metering;
-  drive: Drive;
   stabilisation: boolean;
   ndStops: number;       // neutral density filter strength in stops (0 = none)
   flash: boolean;
   focusPoint: { x: number; y: number }; // normalised 0..1 within the frame
-  manualFocus: boolean;
 }
 
 export function defaultSettings(): ExposureSettings {
@@ -62,13 +57,10 @@ export function defaultSettings(): ExposureSettings {
     mode: 'M',
     autoIso: false,
     whiteBalance: 'auto',
-    metering: 'matrix',
-    drive: 'single',
     stabilisation: true,
     ndStops: 0,
     flash: false,
     focusPoint: { x: 0.5, y: 0.45 },
-    manualFocus: false,
   };
 }
 

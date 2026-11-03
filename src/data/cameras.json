@@ -162,6 +162,7 @@
       "model": "Z50 II",
       "system": "Nikon Z",
       "mount": "z",
+      "kitLensId": "nikkor-z-dx-16-50",
       "sensorFormat": "APS-C",
       "sensorWidthMm": 23.5,
       "sensorHeightMm": 15.7,
@@ -370,6 +371,10 @@
       "model": "X-T5",
       "system": "Fujifilm X",
       "mount": "x",
+      "suggestedLensIds": [
+        "viltrox-27-12-xf",
+        "viltrox-75-12-xf"
+      ],
       "sensorFormat": "APS-C",
       "sensorWidthMm": 23.5,
       "sensorHeightMm": 15.6,
@@ -397,7 +402,8 @@
         25,
         30,
         50,
-        60
+        60,
+        120
       ],
       "videoRes": [
         "6.2K",
@@ -465,6 +471,117 @@
         "strength": 0.7
       },
       "bodyStyle": "professional",
+      "releaseStatus": "current",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "fujifilm-xt4",
+      "manufacturer": "Fujifilm",
+      "model": "X-T4",
+      "system": "Fujifilm X",
+      "mount": "x",
+      "suggestedLensIds": [
+        "viltrox-27-12-xf",
+        "viltrox-75-12-xf"
+      ],
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.5,
+      "sensorHeightMm": 15.6,
+      "cropFactor": 1.5,
+      "resolutionMp": 26,
+      "isoMin": 160,
+      "isoMax": 12800,
+      "isoExtMin": 80,
+      "isoExtMax": 51200,
+      "baseIso": 160,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 8000,
+      "eShutterMax": 32000,
+      "flashSync": 250,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "F-Log"
+      ],
+      "drBaseStops": 12.5,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 1.0
+      },
+      "bodyStyle": "enthusiast",
+      "releaseStatus": "legacy",
+      "dataSource": "manufacturer specification sheet"
+    },
+    {
+      "id": "fujifilm-x100vi",
+      "manufacturer": "Fujifilm",
+      "model": "X100VI",
+      "system": "Fujifilm X100",
+      "mount": "fixed-x100vi",
+      "kitLensId": "fujinon-x100vi-23",
+      "sensorFormat": "APS-C",
+      "sensorWidthMm": 23.5,
+      "sensorHeightMm": 15.6,
+      "cropFactor": 1.5,
+      "resolutionMp": 40,
+      "isoMin": 125,
+      "isoMax": 12800,
+      "isoExtMin": 64,
+      "isoExtMax": 51200,
+      "baseIso": 125,
+      "dualNativeIso": null,
+      "mechShutterMin": 30,
+      "mechShutterMax": 4000,
+      "eShutterMax": 180000,
+      "flashSync": 4000,
+      "ibis": true,
+      "photoModes": [
+        "M",
+        "A",
+        "S",
+        "P"
+      ],
+      "videoFps": [
+        24,
+        25,
+        30,
+        50,
+        60,
+        120
+      ],
+      "videoRes": [
+        "6.2K",
+        "4K",
+        "1080p"
+      ],
+      "logProfiles": [
+        "F-Log",
+        "F-Log2"
+      ],
+      "drBaseStops": 13,
+      "noise": {
+        "cleanIso": 1600,
+        "strength": 0.95
+      },
+      "bodyStyle": "enthusiast",
       "releaseStatus": "current",
       "dataSource": "manufacturer specification sheet"
     },
@@ -1077,6 +1194,7 @@
       "model": "ZX1",
       "system": "Zeiss ZX",
       "mount": "fixed-35",
+      "kitLensId": "zeiss-zx1-35",
       "sensorFormat": "Full frame",
       "sensorWidthMm": 36,
       "sensorHeightMm": 24,

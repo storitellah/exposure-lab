@@ -227,6 +227,41 @@ test.describe('responsive layout', () => {
   });
 });
 
+test.describe('exposure triangle', () => {
+  test('explains the three settings and applies an equal-light alternative', async ({ page }) => {
+    await openApp(page, '/simulator');
+    const tri = page.getByTestId('exposure-triangle');
+    await expect(tri).toBeVisible();
+    await expect(tri.locator('svg')).toBeVisible();
+    const readout = async () =>
+      (await Promise.all(['aperture', 'shutter', 'iso'].map((k) => page.getByTestId(`readout-${k}`).textContent()))).join(' ');
+    const before = await readout();
+    await tri.getByRole('button', { name: 'Try this' }).first().click();
+    await expect.poll(readout).not.toBe(before);
+  });
+});
+
+test.describe('glossary', () => {
+  test('lists many terms with plain and in-depth explanations, searchable in both languages', async ({ page }) => {
+    await openApp(page, '/glossary');
+    const entries = page.getByTestId('glossary-entry');
+    await expect(entries.first()).toBeVisible();
+    expect(await entries.count()).toBeGreaterThanOrEqual(80);
+    await expect(entries.first()).toContainText('In plain words');
+    await expect(entries.first()).toContainText('In depth');
+
+    await page.getByTestId('glossary-search').fill('hyperfocal');
+    await expect(page.locator('#hyperfocal')).toBeVisible();
+
+    // Kiswahili term found while the interface is still in English.
+    await page.getByTestId('glossary-search').fill('kina cha picha');
+    await expect(page.locator('#depth-of-field')).toBeVisible();
+
+    await page.getByTestId('glossary-search').fill('zzzz-no-such-term');
+    await expect(entries).toHaveCount(0);
+  });
+});
+
 test.describe('video mode', () => {
   test('shutter angle follows the 180° rule when frame rate changes', async ({ page }) => {
     await openApp(page, '/video');
