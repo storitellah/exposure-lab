@@ -15,7 +15,14 @@ and together, for both photo and video.
   local gallery, print studio, teacher mode
 - A live exposure-triangle diagram under the simulator: how much light each
   setting contributes, what each one is doing to the picture, and
-  same-brightness alternatives you can apply with one tap
+  same-brightness alternatives you can apply with one tap. Each alternative
+  is measured with the renderer's own optics (background blur, motion blur
+  and shake, grain), so it only promises changes that will actually show
+- A side-view depth of field diagram in the simulator, and a Depth of Field
+  Lab (`/depth-of-field`): focus distance, aperture, focal length, sensor
+  size and background distance with a live preview, guided experiments
+  (e.g. same framing at 35mm vs 135mm) and plain-language and in-depth
+  explanations of focus distance, focal length, focal point and DOF
 - Connect a real camera over USB-C (webcam mode) or HDMI (capture card) for
   a live preview, with setting control where the device allows it
 - White balance with presets and a custom Kelvin setting: every scene has a
@@ -277,8 +284,8 @@ e2e/               Playwright browser tests
 
 | Suite | Result |
 |---|---|
-| `npm test` (Vitest, 91 tests) | ✅ all pass |
-| `npx playwright test` (64 tests, desktop + mobile projects) | ✅ all pass |
+| `npm test` (Vitest, 98 tests) | ✅ all pass |
+| `npx playwright test` (68 tests, desktop + mobile projects) | ✅ all pass |
 | `npm run typecheck` (strict TS) | ✅ clean |
 | `npm run lint` (ESLint + react-hooks/compiler rules) | ✅ 0 errors, 0 warnings |
 | `npm audit --omit=dev` (shipped dependencies) | ✅ 0 vulnerabilities — newer advisories exist only in dev tooling (e.g. `zod` via the ESLint hooks plugin) and never reach the built app |

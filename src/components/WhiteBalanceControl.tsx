@@ -75,9 +75,9 @@ export function WhiteBalanceControl(props: {
   const cameraK = Math.round(camera.kelvin / 100) * 100;
 
   return (
-    <section className="wb" aria-labelledby={`${selectId}-title`} data-testid="white-balance">
+    <section className="wb panel-block" aria-labelledby={`${selectId}-title`} data-testid="white-balance">
       <div className="wb-head">
-        <h3 id={`${selectId}-title`}>{t('whiteBalance')}</h3>
+        <h3 id={`${selectId}-title`} className="panel-subtitle">{t('whiteBalance')}</h3>
         <select
           id={selectId}
           aria-label={t('whiteBalance')}
@@ -88,8 +88,6 @@ export function WhiteBalanceControl(props: {
           {PRESETS.map((p) => <option key={p.value} value={p.value}>{t(p.key)}</option>)}
         </select>
       </div>
-
-      {presetTerm && <p className="wb-preset-note" data-testid="wb-preset-note">{pick(presetTerm.simple)}</p>}
 
       {props.value === 'custom' && (
         <ControlSlider
@@ -102,16 +100,15 @@ export function WhiteBalanceControl(props: {
         />
       )}
 
-      <div className="wb-bar" aria-hidden="true">
+      <div className="wb-bar" aria-hidden="true" title={`${t('wbWarmEnd')} ← → ${t('wbCoolEnd')}`}>
         <div className="wb-gradient" style={{ background: BAR_GRADIENT }} />
-        <span className="wb-mark light" style={{ left: `${position(props.light.kelvin) * 100}%` }}>☀</span>
-        <span className="wb-mark camera" style={{ left: `${position(camera.kelvin) * 100}%` }}>◆</span>
-        <div className="wb-ends"><span>{t('wbWarmEnd')}</span><span>{t('wbCoolEnd')}</span></div>
+        <span className="wb-mark light" style={{ left: `${position(props.light.kelvin) * 100}%` }} />
+        <span className="wb-mark camera" style={{ left: `${position(camera.kelvin) * 100}%` }} />
       </div>
-      <dl className="wb-readout">
-        <div><dt>☀ {t('wbLightHere')}</dt><dd>≈ {lightK}K · {t(lightNameKey(props.light.kelvin))}</dd></div>
-        <div><dt>◆ {t('wbCameraSet')}</dt><dd>{cameraK}K</dd></div>
-      </dl>
+      <div className="wb-scale">
+        <span><i className="wb-key light" aria-hidden="true" />{t('wbLightHere')} <strong>{lightK}K</strong> <small>{t(lightNameKey(props.light.kelvin))}</small></span>
+        <span><i className="wb-key camera" aria-hidden="true" />{t('wbCameraSet')} <strong>{cameraK}K</strong></span>
+      </div>
       <p className={`wb-verdict ${cast}`} role="status" data-testid="wb-verdict">
         {t(CAST_KEYS[cast])}
         {shift.tint > 0.15 && <> {t('wbGreen')}</>}
@@ -120,20 +117,21 @@ export function WhiteBalanceControl(props: {
       </p>
 
       <details className="wb-explainer" data-testid="wb-explainer">
-        <summary>{t('wbWhatIs')}</summary>
-        {WB_EXPLAINER_TERMS.map((id) => wbTerm(id)).filter((e): e is GlossaryEntry => !!e).map((e) => (
+        <summary><span aria-hidden="true">ⓘ</span> {t('wbWhatIs')}</summary>
+        {presetTerm && (
+          <div className="wb-term current">
+            <h4>{pick(presetTerm.term)}</h4>
+            <p data-testid="wb-preset-note"><span className="glossary-label">{t('glossaryPlain')}</span> {pick(presetTerm.simple)}</p>
+            <p><span className="glossary-label depth">{t('glossaryDepth')}</span> {pick(presetTerm.advanced)}</p>
+          </div>
+        )}
+        {WB_EXPLAINER_TERMS.filter((id) => id !== WB_SETTING_TERM[props.value]).map((id) => wbTerm(id)).filter((e): e is GlossaryEntry => !!e).map((e) => (
           <div key={e.id} className="wb-term">
             <h4>{pick(e.term)}</h4>
             <p><span className="glossary-label">{t('glossaryPlain')}</span> {pick(e.simple)}</p>
             <p><span className="glossary-label depth">{t('glossaryDepth')}</span> {pick(e.advanced)}</p>
           </div>
         ))}
-        {presetTerm && props.value !== 'custom' && (
-          <div className="wb-term">
-            <h4>{pick(presetTerm.term)}</h4>
-            <p><span className="glossary-label depth">{t('glossaryDepth')}</span> {pick(presetTerm.advanced)}</p>
-          </div>
-        )}
         <p><Link to="/glossary#gloss-cat-wb">{t('wbMoreTerms')}</Link></p>
       </details>
     </section>

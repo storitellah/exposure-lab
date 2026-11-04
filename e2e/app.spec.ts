@@ -28,6 +28,10 @@ test.describe('core flows', () => {
   test('loads home with brand and mode cards', async ({ page }) => {
     await openApp(page);
     await expect(page.getByRole('heading', { level: 1 })).toContainText('Tatu Exposure Lab');
+    // "by Storitellah" under the logo links to the studio's website.
+    const by = page.locator('header .brand-by');
+    await expect(by).toHaveAttribute('href', 'https://storitellah.com');
+    await expect(by).toHaveAttribute('rel', /noopener/);
     await expect(page.getByTestId('online-status')).toBeVisible();
   });
 
@@ -236,8 +240,19 @@ test.describe('exposure triangle', () => {
     const readout = async () =>
       (await Promise.all(['aperture', 'shutter', 'iso'].map((k) => page.getByTestId(`readout-${k}`).textContent()))).join(' ');
     const before = await readout();
-    await tri.getByRole('button', { name: 'Try this' }).first().click();
+    const meterBefore = await page.locator('.meter-status').first().textContent();
+    const option = tri.getByTestId('same-light-option').first();
+    // Each option reports measured changes (or says honestly that there are none).
+    await expect(option).toContainText(/px|grain|Hardly/);
+    await option.getByRole('button', { name: /Try this/ }).click();
     await expect.poll(readout).not.toBe(before);
+    // Same brightness in practice: the meter stays put (marked f-stops such as
+    // f/2.8 → f/2 are within a tenth of an exact stop).
+    const stops = (txt: string | null) => Number(/([+−-]?\d+\.\d)/.exec(txt ?? '')?.[1]?.replace('−', '-'));
+    await expect(page.locator('.meter-status').first()).toContainText('Balanced');
+    const meterAfter = await page.locator('.meter-status').first().textContent();
+    expect(Math.abs(stops(meterAfter) - stops(meterBefore))).toBeLessThanOrEqual(0.2);
+    await expect(page.getByTestId('change-feedback')).toContainText('Same brightness, new look');
   });
 });
 
@@ -271,9 +286,9 @@ test.describe('white balance', () => {
   test('explains white balance and Kelvin in plain words and in depth', async ({ page }) => {
     await openApp(page, '/simulator');
     await page.getByTestId('wb-select').selectOption('shade');
-    await expect(page.getByTestId('wb-preset-note')).toContainText('shadow');
     const explainer = page.getByTestId('wb-explainer');
     await explainer.locator('summary').click();
+    await expect(page.getByTestId('wb-preset-note')).toContainText('shadow');
     await expect(explainer).toContainText('Colour temperature');
     await expect(explainer).toContainText('In plain words');
     await expect(explainer).toContainText('In depth');
@@ -292,6 +307,36 @@ test.describe('white balance', () => {
     await expect(page.getByTestId('wb-verdict')).toContainText('Whites look white');
     await page.getByTestId('lesson-check').click();
     await expect(page.getByTestId('lesson-success')).toBeVisible();
+  });
+});
+
+test.describe('depth of field', () => {
+  test('the simulator shows a side-view depth of field diagram', async ({ page }) => {
+    await openApp(page, '/simulator');
+    const diagram = page.getByTestId('dof-diagram');
+    await expect(diagram).toContainText('Sharp zone');
+    const before = await diagram.locator('figcaption').textContent();
+    await page.getByRole('button', { name: 'Aperture +' }).click();
+    await page.getByRole('button', { name: 'Aperture +' }).click();
+    await expect.poll(() => diagram.locator('figcaption').textContent()).not.toBe(before);
+  });
+
+  test('the lab shows that a longer lens at the same framing blurs the background more', async ({ page }) => {
+    await openApp(page, '/depth-of-field');
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Depth of Field Lab');
+    const numbers = page.getByTestId('dof-numbers');
+    const blur = async () => Number((await numbers.locator('div').nth(1).locator('dd').textContent())?.replace(/[^0-9.]/g, ''));
+    await page.getByTestId('exp-wide').click();
+    await expect(page.getByTestId('dof-exp-note')).toContainText('135mm');
+    const wide = await blur();
+    await page.getByTestId('exp-tele').click();
+    await expect(page.getByTestId('dof-exp-note')).toContainText('background blur is far bigger');
+    const tele = await blur();
+    expect(tele).toBeGreaterThan(wide * 2);
+    // Focus distance, focal length, focal point and DOF are all explained, plainly and in depth.
+    for (const term of ['Focus distance', 'Focal length', 'Focal point', 'Depth of field (DOF)']) {
+      await expect(page.locator('.dof-term', { hasText: term }).first()).toContainText('In plain words');
+    }
   });
 });
 

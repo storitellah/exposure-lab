@@ -67,6 +67,10 @@ export default function Home() {
           <h2>{t('videoSimulator')}</h2>
           <p>{t('homeVideoCard')}</p>
         </Link>
+        <Link to="/depth-of-field" className="card" ariaLabel={t('dofLabTitle')}>
+          <h2>{t('dofLabTitle')}</h2>
+          <p>{t('homeDofCard')}</p>
+        </Link>
         <Link to="/challenges" className="card" ariaLabel={t('challenges')}>
           <h2>{t('challenges')}</h2>
           <p>{t('homeChallengesCard')}</p>

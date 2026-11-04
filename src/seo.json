@@ -76,6 +76,11 @@
       "path": "/support",
       "title": "Support and Bug Reports | Tatu Exposure Lab",
       "description": "Answers to common questions about exposure, camera permission, offline use, saved photographs and printing — plus how to report a bug."
+    },
+    {
+      "path": "/depth-of-field",
+      "title": "Depth of Field Lab — Focus Distance, Focal Length and Background Blur | Tatu Exposure Lab",
+      "description": "See how focus distance, aperture, focal length and sensor size change what is sharp and how blurred the background gets, with a live preview, a side-view diagram and plain-language explanations."
     }
   ]
 }

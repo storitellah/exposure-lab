@@ -5,6 +5,7 @@
  */
 import { entry, type GlossaryEntry } from './glossary-core';
 import { WB_GLOSSARY } from './glossary-wb';
+import { FOCUS_GLOSSARY } from './glossary-focus';
 
 export { CATEGORY_LABELS, type GlossaryCategory, type GlossaryEntry } from './glossary-core';
 
@@ -144,11 +145,6 @@ export const GLOSSARY: GlossaryEntry[] = [
       'Moja, mfululizo wa chini/juu (hupimwa kwa picha kwa sekunde) na kipima muda. Mfululizo pamoja na focus endelevu ni mpangilio wa kawaida kwa michezo; kumbukumbu ya muda huzuia urefu wa mfululizo.']),
 
   /* -------------------------------- Lenses ------------------------------- */
-  entry('lens', 'focal-length', ['Focal length', 'Urefu wa lenzi'],
-    ['The millimetre number on a lens. Small numbers show a wide view; big numbers zoom in close.',
-      'Namba ya milimita kwenye lenzi. Namba ndogo huonyesha mwonekano mpana; namba kubwa hukuza karibu.'],
-    ['The distance from the lens\'s rear principal point to the sensor when focused at infinity. With sensor size it sets the angle of view; it also scales magnification, depth of field and sensitivity to camera shake.',
-      'Umbali kutoka nukta kuu ya nyuma ya lenzi hadi sensa ikiwa imelenga mbali kabisa. Pamoja na ukubwa wa sensa huweka pembe ya mwonekano; pia huathiri ukuzaji, kina cha picha na usikivu kwa mtikisiko.']),
   entry('lens', 'crop-factor', ['Crop factor', 'Kipimo cha crop'],
     ['How much smaller a sensor is than "full frame". A smaller sensor sees a narrower slice of the scene.',
       'Kiasi sensa ilivyo ndogo kuliko "full frame". Sensa ndogo huona sehemu nyembamba zaidi ya mandhari.'],
@@ -246,26 +242,12 @@ export const GLOSSARY: GlossaryEntry[] = [
       'Kwa usahihi husababishwa na umbali wa kamera, si urefu wa lenzi: kusimama mbali zaidi hubadilisha ukubwa wa vitu kwa kulinganisha, na lenzi ndefu hukata tu mwonekano huo. Mara nyingi hutumika kufanya mandharinyuma ionekane kubwa nyuma ya mtu.']),
 
   /* --------------------------------- Focus -------------------------------- */
+  ...FOCUS_GLOSSARY,
   entry('focus', 'focus', ['Focus', 'Focus'],
     ['Making the part of the picture you care about look sharp.',
       'Kufanya sehemu ya picha unayoijali ionekane wazi.'],
     ['Moving lens elements so that one distance — the plane of focus — forms a sharp image on the sensor. Everything nearer or further is progressively blurred.',
       'Kusogeza vipande vya lenzi ili umbali mmoja — uso wa focus — uunde picha wazi kwenye sensa. Kila kitu kilicho karibu zaidi au mbali zaidi hufifia hatua kwa hatua.']),
-  entry('focus', 'depth-of-field', ['Depth of field', 'Kina cha picha'],
-    ['How much of the picture, from front to back, looks sharp. Shallow = only your subject is sharp. Deep = everything is sharp.',
-      'Kiasi cha picha, kutoka mbele hadi nyuma, kinachoonekana wazi. Kifupi = mhusika wako tu yuko wazi. Kirefu = kila kitu kiko wazi.'],
-    ['The range of distances acceptably sharp at a given print size. It shrinks with a wider aperture, a longer focal length (for the same distance) and a closer subject; at the same framing a larger sensor gives shallower depth.',
-      'Wigo wa umbali unaoonekana wazi kwa ukubwa fulani wa picha. Hupungua kwa aperture pana zaidi, lenzi ndefu zaidi (kwa umbali uleule) na mhusika aliye karibu zaidi; kwa mpangilio uleule sensa kubwa hutoa kina kifupi zaidi.']),
-  entry('focus', 'hyperfocal', ['Hyperfocal distance', 'Umbali wa hyperfocal'],
-    ['The focus distance that keeps as much as possible sharp — from fairly close all the way to the horizon.',
-      'Umbali wa focus unaoweka kiasi kikubwa iwezekanavyo wazi — kuanzia karibu kiasi hadi upeo wa macho.'],
-    ['H = f² ÷ (N·c) + f. Focusing at H makes everything from H/2 to infinity acceptably sharp. Landscape photographers use it to get foreground and mountains sharp together.',
-      'H = f² ÷ (N·c) + f. Kulenga kwenye H hufanya kila kitu kuanzia H/2 hadi mbali kabisa kuwa wazi. Wapigapicha wa mandhari huitumia ili mbele na milima viwe wazi pamoja.']),
-  entry('focus', 'circle-of-confusion', ['Circle of confusion', 'Duara la mkanganyiko'],
-    ['The tiny blur spot so small your eye still sees it as a sharp point.',
-      'Doa dogo la ukungu ambalo ni dogo kiasi kwamba jicho bado linaliona kama nukta wazi.'],
-    ['The largest blur circle still perceived as a point at a standard viewing size; usually the sensor diagonal ÷ 1500 (about 0.029mm on full frame). Depth-of-field calculations depend on it.',
-      'Duara kubwa zaidi la ukungu linaloonekana bado kama nukta kwa ukubwa wa kawaida wa kutazama; kwa kawaida mlalo wa sensa ÷ 1500 (karibu 0.029mm kwenye full frame). Hesabu za kina cha picha hutegemea hili.']),
   entry('focus', 'autofocus', ['Autofocus (AF)', 'Focus otomatiki (AF)'],
     ['The camera focuses for you, usually when you half-press the shutter button.',
       'Kamera hukulengea, kwa kawaida unapobonyeza nusu kitufe cha shutter.'],

@@ -14,7 +14,7 @@ import { resolveExposure } from '../engine/autoexposure';
 import { depthOfField, equivalentFocal } from '../engine/optics';
 import { FRAME_RATES, SHUTTER_ANGLES, shutterFromAngle, angleFromShutter, formatAngle } from '../engine/video';
 import { scoreChallenge, type ScoreBreakdown } from '../engine/scoring';
-import { sceneById, SCENES } from '../scenes/scenes';
+import { sceneById, SCENES, backgroundDistanceOf } from '../scenes/scenes';
 import type { HistogramData } from '../scenes/renderer';
 import { sensorOf, limitsOf, maxApertureAt } from '../data/catalogue';
 import type { Challenge } from '../data/challenges';
@@ -31,6 +31,8 @@ import { haptic, detectDefaultQuality } from '../utils/device';
 import { ControlSlider } from './ControlSlider';
 import { ExposureTriangle } from './ExposureTriangle';
 import { WhiteBalanceControl } from './WhiteBalanceControl';
+import { DepthOfFieldDiagram } from './DepthOfFieldDiagram';
+import { Link } from '../router';
 
 export interface SimulatorProps {
   video?: boolean;
@@ -88,6 +90,7 @@ export function Simulator({
     shortestShutter: 1 / Math.max(camera.mechShutterMax, camera.eShutterMax),
     minIso: camera.isoExtMin,
     maxIso: camera.isoExtMax,
+    ...(camera.flashSync > 0 ? { flashSyncShutter: 1 / camera.flashSync } : {}),
   }), [widestAperture, lens, camera]);
 
   const lockedControls = state.lockedControls;
@@ -110,6 +113,17 @@ export function Simulator({
     const stops = prevEv - curEv; // positive = brighter now
     let what = '';
     let consequence = '';
+    const moved = [
+      prev.aperture !== cur.aperture && `${formatAperture(prev.aperture)} → ${formatAperture(cur.aperture)}`,
+      prev.shutter !== cur.shutter && `${formatShutter(prev.shutter)} → ${formatShutter(cur.shutter)}`,
+      prev.iso !== cur.iso && `ISO ${prev.iso} → ${cur.iso}`,
+    ].filter(Boolean);
+    if (moved.length >= 2 && Math.abs(stops) < 0.2 && prev.focalMm === cur.focalMm) {
+      // A "same brightness, different picture" trade was applied.
+      setChangeMsg(`${t('sameLightApplied')} ${moved.join(', ')}. ${t('undoToCompare')}`);
+      prevRef.current = cur;
+      return;
+    }
     if (prev.focalMm !== cur.focalMm) {
       what = `${prev.focalMm}mm → ${cur.focalMm}mm`;
       consequence = prev.aperture !== cur.aperture
@@ -232,236 +246,257 @@ export function Simulator({
 
   const scenes = video ? SCENES.filter((s) => s.video) : SCENES;
 
-  return (
-    <div className={compact ? '' : 'simulator-grid'}>
-      <div className="sim-preview">
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', marginBottom: '0.5rem' }}>
-          <label htmlFor="scene-select">{t('scene')}</label>
+  const exposurePanel = (
+    <section className="panel sim-controls" aria-labelledby="sim-exposure-title">
+      <h2 id="sim-exposure-title" className="panel-title">{t('panelExposure')}</h2>
+      {allowed('mode') && !video && (
+        <div className="control-row mode-row">
+          <label className="control-label" htmlFor="mode-dial">{t('mode')}</label>
           <select
-            id="scene-select"
-            data-testid="scene-select"
-            value={state.sceneId}
-            onChange={(e) => dispatch({ type: 'set-scene', id: e.target.value, applyStart: true })}
+            id="mode-dial"
+            data-testid="mode-dial"
+            value={state.settings.mode}
+            onChange={(e) => update({ mode: e.target.value as ShootMode })}
           >
-            {scenes.map((s) => <option key={s.id} value={s.id}>{pick(s)}</option>)}
+            <option value="M">M — {t('modeManual')}</option>
+            <option value="A">A — {t('modeAperturePriority')}</option>
+            <option value="S">S — {t('modeShutterPriority')}</option>
+            <option value="P">P — {t('modeProgram')}</option>
           </select>
-          <button type="button" className="icon-btn" onClick={() => dispatch({ type: 'undo' })} aria-label={t('undo')}>↶</button>
-          <button type="button" className="icon-btn" onClick={() => dispatch({ type: 'redo' })} aria-label={t('redo')}>↷</button>
-          <button type="button" className="icon-btn" onClick={() => dispatch({ type: 'reset-exposure' })}>{t('resetExposure')}</button>
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={state.settings.autoIso}
+              onChange={(e) => update({ autoIso: e.target.checked })}
+            />
+            {t('autoIso')}
+          </label>
         </div>
+      )}
 
-        <SceneCanvas
-          sceneId={state.sceneId}
-          settings={resolved}
-          sensor={sensor}
-          noiseProfile={camera.noise}
-          quality={quality}
-          vignetting={lens.vignetting as 'low' | 'medium' | 'high'}
-          onHistogram={setHist}
-          onFocusTap={onFocusTap}
-          ariaLabel={`${pick(scene)} — ${formatAperture(resolved.aperture)}, ${formatShutter(resolved.shutter)}, ISO ${resolved.iso}`}
-        />
-        <div className="vf-readout" style={{ position: 'static', borderRadius: '0 0 12px 12px' }}>
-          <span data-testid="readout-aperture">{formatAperture(resolved.aperture)}</span>
-          <span data-testid="readout-shutter">{formatShutter(resolved.shutter)}</span>
-          <span data-testid="readout-iso">ISO {resolved.iso}</span>
-          {video && <span>{fps} fps · {formatAngle(Math.round(angleFromShutter(resolved.shutter, fps)))}</span>}
-          <span>{equivalentFocal(resolved.focalMm, sensor).toFixed(0)}mm eq.</span>
-          <span>
-            DoF {dof.totalM === Infinity ? '∞' : `${dof.totalM.toFixed(2)}m`}
-          </span>
-        </div>
-
-        <p className="change-toast" role="status" aria-live="polite" data-testid="change-feedback">
-          {changeMsg || t('tagline')}
-        </p>
-      </div>
-
-      <div className="shutter-dock">
-        <button
-          type="button"
-          className="shutter-btn"
-          data-testid="shutter-button"
-          aria-label={t('takePhoto')}
-          onClick={() => void doCapture()}
-        >
-          {t('takePhoto')}
-        </button>
-      </div>
-
-      <div className="control-panel">
-        {allowed('mode') && !video && (
+      {video && (
+        <>
           <div className="control-row">
-            <label className="control-label" htmlFor="mode-dial">{t('mode')}</label>
+            <label className="control-label" htmlFor="fps-select">{t('frameRate')}</label>
             <select
-              id="mode-dial"
-              data-testid="mode-dial"
-              value={state.settings.mode}
-              onChange={(e) => update({ mode: e.target.value as ShootMode })}
+              id="fps-select"
+              value={fps}
+              onChange={(e) => {
+                const f = Number(e.target.value);
+                setFps(f);
+                update({ shutter: shutterFromAngle(180, f) });
+              }}
             >
-              <option value="M">M — {t('modeManual')}</option>
-              <option value="A">A — {t('modeAperturePriority')}</option>
-              <option value="S">S — {t('modeShutterPriority')}</option>
-              <option value="P">P — {t('modeProgram')}</option>
+              {FRAME_RATES.filter((f) => camera.videoFps.length === 0 || camera.videoFps.includes(f)).map((f) => (
+                <option key={f} value={f}>{f} fps</option>
+              ))}
             </select>
-            <label style={{ display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
+          </div>
+          <div className="control-row">
+            <label className="control-label" htmlFor="angle-select">{t('shutterAngle')}</label>
+            <select
+              id="angle-select"
+              value={SHUTTER_ANGLES.reduce((best, a) =>
+                Math.abs(shutterFromAngle(a, fps) - state.settings.shutter) <
+                Math.abs(shutterFromAngle(best, fps) - state.settings.shutter) ? a : best, 180 as number)}
+              onChange={(e) => update({ shutter: shutterFromAngle(Number(e.target.value), fps) })}
+            >
+              {SHUTTER_ANGLES.map((a) => (
+                <option key={a} value={a}>{formatAngle(a)} = {formatShutter(shutterFromAngle(a, fps))}</option>
+              ))}
+            </select>
+          </div>
+          <p className="panel-note">{t('angleRule')}</p>
+        </>
+      )}
+
+      {allowed('aperture') && (
+        <ControlWithLock name="aperture" lockedList={state.lockedControls}>
+          <SliderRow
+            label={t('aperture')}
+            values={APERTURES.filter((a) => a >= widestAperture - 1e-9 && a <= lens.minAperture)}
+            value={resolved.aperture}
+            format={formatAperture}
+            disabled={!canUse('aperture') || (!video && state.settings.mode === 'S') || (!video && state.settings.mode === 'P')}
+            onChange={(v) => update({ aperture: v })}
+          />
+        </ControlWithLock>
+      )}
+      {allowed('shutter') && !video && (
+        <ControlWithLock name="shutter" lockedList={state.lockedControls}>
+          <SliderRow
+            label={t('shutterSpeed')}
+            values={[...SHUTTERS].reverse()}
+            value={resolved.shutter}
+            format={formatShutter}
+            disabled={!canUse('shutter') || state.settings.mode === 'A' || state.settings.mode === 'P'}
+            onChange={(v) => update({ shutter: v })}
+          />
+        </ControlWithLock>
+      )}
+      {allowed('iso') && (
+        <ControlWithLock name="iso" lockedList={state.lockedControls}>
+          <SliderRow
+            label="ISO"
+            values={ISOS.filter((i) => i >= camera.isoExtMin && i <= camera.isoExtMax)}
+            value={resolved.iso}
+            format={(v) => `${v}`}
+            disabled={!canUse('iso') || state.settings.autoIso}
+            onChange={(v) => update({ iso: v })}
+          />
+        </ControlWithLock>
+      )}
+      {allowed('evComp') && (
+        <SliderRow
+          label={t('evComp')}
+          values={Array.from({ length: 31 }, (_, i) => (i - 15) / 3)}
+          value={state.settings.evComp}
+          format={(v) => `${v >= 0 ? '+' : ''}${(Math.round(v * 3) / 3).toFixed(1)}`}
+          onChange={(v) => update({ evComp: v })}
+          linearMatch
+        />
+      )}
+      {(allowed('focal') || allowed('focus')) && <h3 className="panel-subtitle">{t('panelLensFocus')}</h3>}
+      {allowed('focal') && (
+        <SliderRow
+          label={t('focalLength')}
+          values={focalValues}
+          value={state.settings.focalMm}
+          format={(v) => `${v}mm`}
+          disabled={focalValues.length < 2}
+          onChange={(v) => update({ focalMm: v })}
+        />
+      )}
+      {allowed('focus') && (
+        <SliderRow
+          label={t('focusDistance')}
+          values={focusValues}
+          value={state.settings.focusDistM}
+          format={(v) => (v >= 100 ? '∞' : `${v}m`)}
+          onChange={(v) => update({ focusDistM: v })}
+        />
+      )}
+    </section>
+  );
+
+  const lightPanel = (
+    <section className="panel sim-side" aria-labelledby="sim-light-title">
+      <h2 id="sim-light-title" className="panel-title">{t('panelLight')}</h2>
+      <div className="panel-block">
+        <h3 className="panel-subtitle">{t('meter')}</h3>
+        <Meter reading={meter} />
+      </div>
+      {hist && (
+        <div className="panel-block">
+          <h3 className="panel-subtitle">{t('histogram')}</h3>
+          <Histogram data={hist} />
+        </div>
+      )}
+      {(allowed('wb') || allowed('advanced')) && (
+        <WhiteBalanceControl
+          value={state.settings.whiteBalance}
+          kelvin={state.settings.wbKelvin}
+          light={scene.light}
+          onChange={update}
+        />
+      )}
+      {allowed('advanced') && (
+        <details className="panel-more">
+          <summary>{t('moreSettings')}</summary>
+          <div className="panel-more-body">
+            <label className="field">
+              <span>{t('ndFilter')}</span>
+              <select value={state.settings.ndStops} onChange={(e) => update({ ndStops: Number(e.target.value) })}>
+                <option value={0}>—</option>
+                <option value={3}>ND8 (3 {t('stops')})</option>
+                <option value={6}>ND64 (6 {t('stops')})</option>
+                <option value={10}>ND1000 (10 {t('stops')})</option>
+              </select>
+            </label>
+            <label className="check">
               <input
                 type="checkbox"
-                checked={state.settings.autoIso}
-                onChange={(e) => update({ autoIso: e.target.checked })}
+                checked={hasStabilisation && state.settings.stabilisation}
+                disabled={!hasStabilisation}
+                onChange={(e) => update({ stabilisation: e.target.checked })}
               />
-              {t('autoIso')}
+              {t('stabilisation')}{hasStabilisation ? '' : ` — ${t('notOnThisGear')}`}
+            </label>
+            <label className="check">
+              <input type="checkbox" checked={state.settings.flash} onChange={(e) => update({ flash: e.target.checked })} disabled={camera.flashSync === 0} />
+              {t('flash')}
             </label>
           </div>
-        )}
+        </details>
+      )}
+    </section>
+  );
 
-        {video && (
-          <>
-            <div className="control-row">
-              <label className="control-label" htmlFor="fps-select">{t('frameRate')}</label>
-              <select
-                id="fps-select"
-                value={fps}
-                onChange={(e) => {
-                  const f = Number(e.target.value);
-                  setFps(f);
-                  update({ shutter: shutterFromAngle(180, f) });
-                }}
-              >
-                {FRAME_RATES.filter((f) => camera.videoFps.length === 0 || camera.videoFps.includes(f)).map((f) => (
-                  <option key={f} value={f}>{f} fps</option>
-                ))}
-              </select>
+  return (
+    <div className="sim">
+      <div className="sim-layout">
+        <div className="sim-centre">
+          <div className="sim-toolbar">
+            <label htmlFor="scene-select" className="sim-toolbar-label">{t('scene')}</label>
+            <select
+              id="scene-select"
+              data-testid="scene-select"
+              value={state.sceneId}
+              onChange={(e) => dispatch({ type: 'set-scene', id: e.target.value, applyStart: true })}
+            >
+              {scenes.map((s) => <option key={s.id} value={s.id}>{pick(s)}</option>)}
+            </select>
+            <div className="sim-toolbar-actions">
+              <button type="button" className="icon-btn" onClick={() => dispatch({ type: 'undo' })} aria-label={t('undo')} title={t('undo')}>↶</button>
+              <button type="button" className="icon-btn" onClick={() => dispatch({ type: 'redo' })} aria-label={t('redo')} title={t('redo')}>↷</button>
+              <button type="button" className="icon-btn text" onClick={() => dispatch({ type: 'reset-exposure' })}>{t('resetExposure')}</button>
             </div>
-            <div className="control-row">
-              <label className="control-label" htmlFor="angle-select">{t('shutterAngle')}</label>
-              <select
-                id="angle-select"
-                value={SHUTTER_ANGLES.reduce((best, a) =>
-                  Math.abs(shutterFromAngle(a, fps) - state.settings.shutter) <
-                  Math.abs(shutterFromAngle(best, fps) - state.settings.shutter) ? a : best, 180 as number)}
-                onChange={(e) => update({ shutter: shutterFromAngle(Number(e.target.value), fps) })}
-              >
-                {SHUTTER_ANGLES.map((a) => (
-                  <option key={a} value={a}>{formatAngle(a)} = {formatShutter(shutterFromAngle(a, fps))}</option>
-                ))}
-              </select>
+          </div>
+
+          <div className="sim-frame">
+            <SceneCanvas
+              sceneId={state.sceneId}
+              settings={resolved}
+              sensor={sensor}
+              noiseProfile={camera.noise}
+              quality={quality}
+              vignetting={lens.vignetting as 'low' | 'medium' | 'high'}
+              onHistogram={setHist}
+              onFocusTap={onFocusTap}
+              ariaLabel={`${pick(scene)} — ${formatAperture(resolved.aperture)}, ${formatShutter(resolved.shutter)}, ISO ${resolved.iso}`}
+            />
+            <div className="vf-readout">
+              <span data-testid="readout-aperture">{formatAperture(resolved.aperture)}</span>
+              <span data-testid="readout-shutter">{formatShutter(resolved.shutter)}</span>
+              <span data-testid="readout-iso">ISO {resolved.iso}</span>
+              {video && <span>{fps} fps · {formatAngle(Math.round(angleFromShutter(resolved.shutter, fps)))}</span>}
+              <span>{equivalentFocal(resolved.focalMm, sensor).toFixed(0)}mm eq.</span>
+              <span>DoF {dof.totalM === Infinity ? '∞' : `${dof.totalM.toFixed(2)}m`}</span>
             </div>
-            <p className="notice" style={{ fontSize: '0.82rem' }}>{t('angleRule')}</p>
-          </>
-        )}
+          </div>
 
-        {allowed('aperture') && (
-          <ControlWithLock name="aperture" lockedList={state.lockedControls}>
-            <SliderRow
-              label={t('aperture')}
-              values={APERTURES.filter((a) => a >= widestAperture - 1e-9 && a <= lens.minAperture)}
-              value={resolved.aperture}
-              format={formatAperture}
-              disabled={!canUse('aperture') || (!video && state.settings.mode === 'S') || (!video && state.settings.mode === 'P')}
-              onChange={(v) => update({ aperture: v })}
+          <div className="shutter-bar">
+            <button
+              type="button"
+              className="shutter-btn"
+              data-testid="shutter-button"
+              aria-label={t('takePhoto')}
+              onClick={() => void doCapture()}
             />
-          </ControlWithLock>
-        )}
-        {allowed('shutter') && !video && (
-          <ControlWithLock name="shutter" lockedList={state.lockedControls}>
-            <SliderRow
-              label={t('shutterSpeed')}
-              values={[...SHUTTERS].reverse()}
-              value={resolved.shutter}
-              format={formatShutter}
-              disabled={!canUse('shutter') || state.settings.mode === 'A' || state.settings.mode === 'P'}
-              onChange={(v) => update({ shutter: v })}
-            />
-          </ControlWithLock>
-        )}
-        {allowed('iso') && (
-          <ControlWithLock name="iso" lockedList={state.lockedControls}>
-            <SliderRow
-              label="ISO"
-              values={ISOS.filter((i) => i >= camera.isoExtMin && i <= camera.isoExtMax)}
-              value={resolved.iso}
-              format={(v) => `${v}`}
-              disabled={!canUse('iso') || state.settings.autoIso}
-              onChange={(v) => update({ iso: v })}
-            />
-          </ControlWithLock>
-        )}
-        {allowed('evComp') && (
-          <SliderRow
-            label={t('evComp')}
-            values={Array.from({ length: 31 }, (_, i) => (i - 15) / 3)}
-            value={state.settings.evComp}
-            format={(v) => `${v >= 0 ? '+' : ''}${(Math.round(v * 3) / 3).toFixed(1)}`}
-            onChange={(v) => update({ evComp: v })}
-            linearMatch
-          />
-        )}
-        {allowed('focal') && (
-          <SliderRow
-            label={t('focalLength')}
-            values={focalValues}
-            value={state.settings.focalMm}
-            format={(v) => `${v}mm`}
-            disabled={focalValues.length < 2}
-            onChange={(v) => update({ focalMm: v })}
-          />
-        )}
-        {allowed('focus') && (
-          <SliderRow
-            label={t('focusDistance')}
-            values={focusValues}
-            value={state.settings.focusDistM}
-            format={(v) => (v >= 100 ? '∞' : `${v}m`)}
-            onChange={(v) => update({ focusDistM: v })}
-          />
-        )}
+            <span className="shutter-caption" aria-hidden="true">{t('takePhoto')}</span>
+          </div>
 
-        <Meter reading={meter} />
-        {hist && <Histogram data={hist} />}
+          <p className="change-toast" role="status" aria-live="polite" data-testid="change-feedback">
+            {changeMsg || t('tagline')}
+          </p>
+        </div>
 
-        {(allowed('wb') || allowed('advanced')) && (
-          <WhiteBalanceControl
-            value={state.settings.whiteBalance}
-            kelvin={state.settings.wbKelvin}
-            light={scene.light}
-            onChange={update}
-          />
-        )}
-
-        {allowed('advanced') && (
-          <details>
-            <summary style={{ cursor: 'pointer', fontWeight: 700 }}>{t('settings')}</summary>
-            <div style={{ display: 'grid', gap: '0.5rem', paddingTop: '0.5rem' }}>
-              <label>
-                {t('ndFilter')}{' '}
-                <select value={state.settings.ndStops} onChange={(e) => update({ ndStops: Number(e.target.value) })}>
-                  <option value={0}>—</option>
-                  <option value={3}>ND8 (3 {t('stops')})</option>
-                  <option value={6}>ND64 (6 {t('stops')})</option>
-                  <option value={10}>ND1000 (10 {t('stops')})</option>
-                </select>
-              </label>
-              <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                <input
-                  type="checkbox"
-                  checked={hasStabilisation && state.settings.stabilisation}
-                  disabled={!hasStabilisation}
-                  onChange={(e) => update({ stabilisation: e.target.checked })}
-                />
-                {t('stabilisation')}{hasStabilisation ? '' : ` — ${t('notOnThisGear')}`}
-              </label>
-              <label style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-                <input type="checkbox" checked={state.settings.flash} onChange={(e) => update({ flash: e.target.checked })} disabled={camera.flashSync === 0} />
-                {t('flash')}
-              </label>
-            </div>
-          </details>
-        )}
+        {lightPanel}
+        {exposurePanel}
       </div>
 
       {!compact && (
-        <div className="sim-triangle">
+        <div className="sim-insights">
           <ExposureTriangle
             settings={resolved}
             meter={meter}
@@ -469,11 +504,25 @@ export function Simulator({
             noiseProfile={camera.noise}
             subjectSpeedPxPerS={scene.subjectSpeedPxPerS}
             limits={gearLimits}
+            backgroundDistM={backgroundDistanceOf(scene)}
             // Ready-made trades would hand over the answer in a lesson or
             // challenge, and break the 180° rule in video, so they are only
             // offered in the free simulator.
             {...(!video && !challenge && !allowedControls ? { onApply: update } : {})}
           />
+          <section className="card dof-panel" aria-labelledby="dof-panel-title">
+            <h2 id="dof-panel-title" className="tri-title">{t('dofPanelTitle')}</h2>
+            <p className="tri-caption">{t('dofPanelCaption')}</p>
+            <DepthOfFieldDiagram
+              focalMm={resolved.focalMm}
+              aperture={resolved.aperture}
+              focusDistM={resolved.focusDistM}
+              sensor={sensor}
+              subjectDistM={scene.subjectDistM}
+              backgroundDistM={backgroundDistanceOf(scene)}
+            />
+            <p className="dof-panel-link"><Link to="/depth-of-field">{t('dofOpenLab')}</Link></p>
+          </section>
         </div>
       )}
 

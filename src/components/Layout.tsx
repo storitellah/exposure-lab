@@ -75,13 +75,17 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="app-shell">
       <a href="#main" className="skip-link">{t('skipToContent')}</a>
       <header className="app-header">
-        <Link to="/" className="brand">
-          <Wordmark size={34} />
-          <span>
-            {t('appName')}
-            <small>{t('byStoritellah')}</small>
-          </span>
-        </Link>
+        <div className="brand">
+          {/* The logo repeats the home link for pointer users; keyboard and
+              screen-reader users get one home link (the name) instead of two. */}
+          <Link to="/" className="brand-logo" tabIndex={-1} ariaHidden>
+            <Wordmark size={36} />
+          </Link>
+          <div className="brand-text">
+            <Link to="/" className="brand-name">{t('appName')}</Link>
+            <StoritellahLink className="brand-by">{t('byStoritellah')}</StoritellahLink>
+          </div>
+        </div>
         <button
           type="button"
           className="icon-btn nav-toggle"
@@ -118,23 +122,46 @@ export function Layout({ children }: { children: ReactNode }) {
       <main id="main" className="app-main">{children}</main>
 
       <footer className="app-footer">
-        <p>
-          <strong>{t('appName')}</strong> {t('byPrefix')} <StoritellahLink /> — {t('tagline')}
-        </p>
-        <nav aria-label="Footer">
-          <Link to="/privacy">{t('navPrivacy')}</Link>
-          <Link to="/accessibility">{t('navAccessibility')}</Link>
-          <Link to="/security">{t('navSecurity')}</Link>
-          <Link to="/support">{t('navSupport')}</Link>
-          <Link to="/glossary">{t('navGlossary')}</Link>
-          <Link to="/about">{t('navAbout')}</Link>
-        </nav>
-        <p>
-          © {new Date().getFullYear()} <StoritellahLink /> · {t('version')} {APP_VERSION} ·{' '}
-          <span className={`status-dot ${online ? 'online' : 'offline'}`} aria-hidden="true" />
-          <span data-testid="online-status">{online ? t('online') : t('offline')}</span>
-        </p>
-        <p style={{ fontSize: '0.78rem' }}>{t('independentShort')}</p>
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <Wordmark size={44} />
+            <div>
+              <p className="footer-name">{t('appName')}</p>
+              <p className="footer-by">{t('byPrefix')} <StoritellahLink /></p>
+              <p className="footer-tagline">{t('tagline')}</p>
+            </div>
+          </div>
+          <nav className="footer-nav" aria-label="Footer">
+            <div>
+              <h2>{t('footerExplore')}</h2>
+              <ul>
+                <li><Link to="/learn">{t('navLearn')}</Link></li>
+                <li><Link to="/simulator">{t('navSimulator')}</Link></li>
+                <li><Link to="/depth-of-field">{t('navDof')}</Link></li>
+                <li><Link to="/glossary">{t('navGlossary')}</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h2>{t('footerInfo')}</h2>
+              <ul>
+                <li><Link to="/about">{t('navAbout')}</Link></li>
+                <li><Link to="/privacy">{t('navPrivacy')}</Link></li>
+                <li><Link to="/accessibility">{t('navAccessibility')}</Link></li>
+                <li><Link to="/security">{t('navSecurity')}</Link></li>
+                <li><Link to="/support">{t('navSupport')}</Link></li>
+              </ul>
+            </div>
+          </nav>
+          <div className="footer-meta">
+            <p>© {new Date().getFullYear()} <StoritellahLink /></p>
+            <p>{t('version')} {APP_VERSION}</p>
+            <p>
+              <span className={`status-dot ${online ? 'online' : 'offline'}`} aria-hidden="true" />
+              <span data-testid="online-status">{online ? t('online') : t('offline')}</span>
+            </p>
+          </div>
+        </div>
+        <p className="footer-note">{t('independentShort')}</p>
       </footer>
 
       <dialog ref={settingsRef} aria-label={t('settings')}>

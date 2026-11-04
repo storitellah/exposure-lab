@@ -5,13 +5,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { renderScene, computeHistogram, invalidateSceneCache, activeLayers, type HistogramData, type Quality } from '../scenes/renderer';
 import { loadScenePhotos, photoReady } from '../scenes/photos';
-import { sceneById } from '../scenes/scenes';
+import { sceneById, type SceneDef } from '../scenes/scenes';
 import type { ExposureSettings } from '../engine/settings';
 import type { SensorFormat } from '../engine/optics';
 import type { NoiseProfile } from '../engine/noise';
 
 export interface SceneCanvasProps {
   sceneId: string;
+  /** Use this scene object instead of looking `sceneId` up (e.g. with moved layers). */
+  scene?: SceneDef;
   settings: ExposureSettings;
   sensor: SensorFormat;
   noiseProfile: NoiseProfile;
@@ -25,7 +27,7 @@ export interface SceneCanvasProps {
 export function SceneCanvas(props: SceneCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [focusVisible, setFocusVisible] = useState(false);
-  const scene = useMemo(() => sceneById(props.sceneId), [props.sceneId]);
+  const scene = useMemo(() => props.scene ?? sceneById(props.sceneId), [props.scene, props.sceneId]);
   const histTimer = useRef<number | null>(null);
   const { onHistogram } = props;
 

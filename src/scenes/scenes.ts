@@ -334,3 +334,14 @@ export function stars(ctx: Ctx, count = 60, seed = 19): void {
     ctx.fillRect(rnd() * REF_W, rnd() * REF_H * 0.5, 1.6, 1.6);
   }
 }
+
+/**
+ * Distance of the main background: the nearest layer clearly behind the
+ * subject (falling back to the farthest layer). Used to measure how blurred
+ * the background will look.
+ */
+export function backgroundDistanceOf(scene: SceneDef): number {
+  const distances = scene.layers.map((l) => l.distanceM);
+  const behind = distances.filter((d) => d > scene.subjectDistM * 1.2);
+  return behind.length > 0 ? Math.min(...behind) : Math.max(...distances);
+}

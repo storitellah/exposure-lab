@@ -34,7 +34,7 @@ export function ControlSlider({ label, values, value, format, onChange, disabled
   };
 
   return (
-    <div className="control-row">
+    <div className="control-row slider-row">
       <label className="control-label" htmlFor={id}>{label}</label>
       <button
         type="button"

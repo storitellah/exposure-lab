@@ -45,13 +45,15 @@ export function useRouter(): RouterValue {
 }
 
 export function Link({
-  to, children, className, ariaLabel, onNavigate,
+  to, children, className, ariaLabel, onNavigate, tabIndex, ariaHidden,
 }: {
   to: string;
   children: ReactNode;
   className?: string;
   ariaLabel?: string;
   onNavigate?: () => void;
+  tabIndex?: number;
+  ariaHidden?: boolean;
 }) {
   const { navigate, path } = useRouter();
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
@@ -68,6 +70,8 @@ export function Link({
       className={className}
       aria-label={ariaLabel}
       aria-current={current ? 'page' : undefined}
+      tabIndex={tabIndex}
+      aria-hidden={ariaHidden || undefined}
     >
       {children}
     </a>

@@ -20,6 +20,7 @@ const SecurityPage = lazy(() => import('./pages/SecurityPage'));
 const About = lazy(() => import('./pages/About'));
 const Support = lazy(() => import('./pages/Support'));
 const MyCamera = lazy(() => import('./pages/MyCamera'));
+const DepthOfFieldLab = lazy(() => import('./pages/DepthOfFieldLab'));
 
 class ErrorBoundary extends Component<{ children: ReactNode; message: string }, { failed: boolean }> {
   state = { failed: false };
@@ -56,6 +57,7 @@ export function App() {
     if (path.startsWith('/about')) return <About />;
     if (path.startsWith('/support')) return <Support />;
     if (path.startsWith('/my-camera')) return <MyCamera />;
+    if (path.startsWith('/depth-of-field')) return <DepthOfFieldLab />;
     return <Home />;
   };
 

@@ -8,25 +8,15 @@
  * corner to another — which is the whole idea of the triangle.
  */
 import { useMemo } from 'react';
+import { formatAperture, formatShutter, type ExposureSettings } from '../engine/settings';
 import {
-  APERTURES, SHUTTERS, ISOS, nearest, formatAperture, formatShutter,
-  type ExposureSettings,
-} from '../engine/settings';
-import { settingsEV100 } from '../engine/exposure';
+  sameExposureAlternatives, grainLevel, type GearLimits, type LookChange,
+} from '../engine/tradeoffs';
 import { depthOfField, shakeAmount, type SensorFormat } from '../engine/optics';
 import { noiseAmount, type NoiseProfile } from '../engine/noise';
 import { subjectBlurPx } from '../engine/scoring';
 import { useI18n } from '../i18n';
 import type { TranslationKey } from '../i18n/en';
-
-export interface GearLimits {
-  widestAperture: number;
-  narrowestAperture: number;
-  longestShutter: number;
-  shortestShutter: number;
-  minIso: number;
-  maxIso: number;
-}
 
 interface Props {
   settings: ExposureSettings;
@@ -35,6 +25,8 @@ interface Props {
   noiseProfile: NoiseProfile;
   subjectSpeedPxPerS: number;
   limits: GearLimits;
+  /** Distance of the main background, for measuring background blur. */
+  backgroundDistM: number;
   /** When given, each alternative gets a "Try this" button. */
   onApply?: (patch: Partial<ExposureSettings>) => void;
 }
@@ -71,54 +63,6 @@ function noiseEffect(n: number): TranslationKey {
   return 'effectNoiseHeavy';
 }
 
-/** Move a value along its third-stop table; undefined if it runs off the end. */
-function shift(table: number[], value: number, thirds: number): number | undefined {
-  const idx = table.indexOf(nearest(table, value));
-  return table[idx + thirds];
-}
-
-interface Alternative {
-  patch: Pick<ExposureSettings, 'aperture' | 'shutter' | 'iso'>;
-  effect: TranslationKey;
-}
-
-/**
- * Trades that keep brightness the same. Index directions: APERTURES rises in
- * f-number (less light), SHUTTERS runs long → short (less light), ISOS rises
- * (more light). Two stops is six third-stop steps; fall back to one stop.
- */
-function alternatives(s: ExposureSettings, lim: GearLimits): Alternative[] {
-  const inRange = (p: Alternative['patch']) =>
-    p.aperture >= lim.widestAperture - 1e-9 && p.aperture <= lim.narrowestAperture + 1e-9 &&
-    p.shutter <= lim.longestShutter + 1e-9 && p.shutter >= lim.shortestShutter - 1e-12 &&
-    p.iso >= lim.minIso && p.iso <= lim.maxIso;
-
-  const build = (
-    effect: TranslationKey,
-    make: (thirds: number) => Partial<Alternative['patch']> | undefined,
-  ): Alternative | undefined => {
-    for (const thirds of [6, 3]) {
-      const moved = make(thirds);
-      if (!moved || Object.values(moved).some((v) => v === undefined)) continue;
-      const patch = { aperture: s.aperture, shutter: s.shutter, iso: s.iso, ...moved };
-      if (inRange(patch)) return { patch, effect };
-    }
-    return undefined;
-  };
-
-  const openUp = build('altMoreBlur', (n) => ({
-    aperture: shift(APERTURES, s.aperture, -n), shutter: shift(SHUTTERS, s.shutter, n),
-  }));
-  const stopDown = build('altMoreDepth', (n) => ({
-    aperture: shift(APERTURES, s.aperture, n), shutter: shift(SHUTTERS, s.shutter, -n),
-  }));
-  const isoTrade = s.iso <= 1600
-    ? build('altFasterNoisier', (n) => ({ shutter: shift(SHUTTERS, s.shutter, n), iso: shift(ISOS, s.iso, n) }))
-    : build('altCleaner', (n) => ({ shutter: shift(SHUTTERS, s.shutter, -n), iso: shift(ISOS, s.iso, -n) }));
-
-  return [openUp, stopDown, isoTrade].filter((a): a is Alternative => a !== undefined);
-}
-
 function Pips({ share, colour }: { share: number; colour: string }) {
   const filled = Math.max(1, Math.min(5, Math.round(share * 5)));
   return (
@@ -130,7 +74,22 @@ function Pips({ share, colour }: { share: number; colour: string }) {
   );
 }
 
-export function ExposureTriangle({ settings: s, meter, sensor, noiseProfile, subjectSpeedPxPerS, limits, onApply }: Props) {
+const GRAIN_KEYS = ['grainClean', 'grainSlight', 'grainVisible', 'grainHeavy'] as const;
+
+function ChangeChip({ c }: { c: LookChange }) {
+  const { t } = useI18n();
+  const label = t(`chg_${c.kind}_${c.direction}` as TranslationKey);
+  const value = c.kind === 'noise'
+    ? `${t(GRAIN_KEYS[grainLevel(c.before)])} → ${t(GRAIN_KEYS[grainLevel(c.after)])}`
+    : `${c.before.toFixed(1)} → ${c.after.toFixed(1)} px`;
+  return (
+    <li className={`tri-chip ${c.kind} ${c.direction}`}>
+      <span aria-hidden="true">{c.direction === 'more' ? '▲' : '▼'}</span> {label} <small>{value}</small>
+    </li>
+  );
+}
+
+export function ExposureTriangle({ settings: s, meter, sensor, noiseProfile, subjectSpeedPxPerS, limits, backgroundDistM, onApply }: Props) {
   const { t } = useI18n();
 
   const dof = depthOfField(s.focalMm, s.aperture, s.focusDistM, sensor);
@@ -162,8 +121,10 @@ export function ExposureTriangle({ settings: s, meter, sensor, noiseProfile, sub
     ? t('triangleBalanced')
     : t(meter > 0 ? 'triangleTooBright' : 'triangleTooDark').replace('{n}', Math.abs(rounded).toFixed(1));
 
-  const alts = useMemo(() => (onApply ? alternatives(s, limits) : []), [s, limits, onApply]);
-  const baseEv = settingsEV100({ aperture: s.aperture, shutter: s.shutter, iso: s.iso });
+  const alts = useMemo(
+    () => (onApply ? sameExposureAlternatives(s, limits, { sensor, noiseProfile, subjectSpeedPxPerS, backgroundDistM }) : []),
+    [s, limits, onApply, sensor, noiseProfile, subjectSpeedPxPerS, backgroundDistM],
+  );
 
   return (
     <section className="tri card" aria-labelledby="tri-title" data-testid="exposure-triangle">
@@ -217,21 +178,27 @@ export function ExposureTriangle({ settings: s, meter, sensor, noiseProfile, sub
           <h3>{t('sameLightTitle')}</h3>
           <p className="tri-caption">{t('sameLightIntro')}</p>
           <ul>
-            {alts.map((a) => {
-              const delta = settingsEV100(a.patch) - baseEv;
-              return (
-                <li key={`${a.patch.aperture}-${a.patch.shutter}-${a.patch.iso}`}>
-                  <span className="tri-alt-values">
-                    {formatAperture(a.patch.aperture)} · {formatShutter(a.patch.shutter)} · ISO {a.patch.iso}
-                    {Math.abs(delta) >= 0.17 && <small> ({delta > 0 ? '−' : '+'}{Math.abs(delta).toFixed(1)})</small>}
-                  </span>
-                  <span className="tri-alt-effect">{t(a.effect)}</span>
-                  <button type="button" className="btn" onClick={() => onApply?.({ ...a.patch, mode: 'M', autoIso: false })}>
-                    {t('tryThis')}
-                  </button>
-                </li>
-              );
-            })}
+            {alts.map((a) => (
+              <li key={`${a.patch.aperture}-${a.patch.shutter}-${a.patch.iso}`} data-testid="same-light-option">
+                <span className="tri-alt-values">
+                  {formatAperture(a.patch.aperture)} · {formatShutter(a.patch.shutter)} · ISO {a.patch.iso}
+                  {Math.abs(a.evDelta) >= 0.17 && <small> ({a.evDelta > 0 ? '+' : '−'}{Math.abs(a.evDelta).toFixed(1)})</small>}
+                </span>
+                {a.changes.length > 0 ? (
+                  <ul className="tri-chips">{a.changes.map((c) => <ChangeChip key={c.kind} c={c} />)}</ul>
+                ) : (
+                  <span className="tri-alt-effect">{t('chgNone')}</span>
+                )}
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => onApply?.({ ...a.patch, mode: 'M', autoIso: false })}
+                  aria-label={`${t('tryThis')}: ${formatAperture(a.patch.aperture)}, ${formatShutter(a.patch.shutter)}, ISO ${a.patch.iso}`}
+                >
+                  {t('tryThis')}
+                </button>
+              </li>
+            ))}
           </ul>
         </div>
       )}

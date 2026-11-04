@@ -11,7 +11,7 @@ import { REF_W, REF_H } from './primitives';
 import type { SceneDef, SceneLayer } from './scenes';
 import { photoLayers } from './photos';
 import { brightnessMultiplier, stopsFromCorrect } from '../engine/exposure';
-import { blurCircleMm, diffractionSoftness, shakeAmount, type SensorFormat } from '../engine/optics';
+import { blurCircleMm, diffractionSoftness, shakeAmount, sensorDiagonalMm, FULL_FRAME, type SensorFormat } from '../engine/optics';
 import { noiseAmount, colourNoiseAmount, detailRetention } from '../engine/noise';
 import type { ExposureSettings } from '../engine/settings';
 import type { NoiseProfile } from '../engine/noise';
@@ -227,6 +227,7 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
   const shake = shakeAmount(s.shutter, s.focalMm, o.sensor, s.stabilisation);
   const diffraction = diffractionSoftness(s.aperture, o.sensor) * 6;
   const detail = detailRetention(s.iso, o.noiseProfile);
+  const sensorScale = sensorDiagonalMm(FULL_FRAME) / sensorDiagonalMm(o.sensor);
   const motionSamples = o.quality === 'high' ? 14 : o.quality === 'medium' ? 9 : 5;
 
   ctx.clearRect(0, 0, width, height);
@@ -237,7 +238,8 @@ export function renderScene(target: HTMLCanvasElement, o: RenderOptions): void {
     // Defocus blur from the depth-of-field model, plus diffraction and
     // noise-reduction softening. Blur circle mm → screen px (empirical scale).
     const defocusMm = blurCircleMm(s.focalMm, s.aperture, s.focusDistM, layer.distanceM);
-    let blurPx = Math.min(38, defocusMm * 28) * scale * 0.6 + diffraction * scale * 0.15;
+    // The same blur circle is a bigger share of a smaller sensor's frame.
+    let blurPx = Math.min(38, defocusMm * 28 * sensorScale) * scale * 0.6 + diffraction * scale * 0.15;
     blurPx += (1 - detail) * 1.2 * scale;
 
     // Motion blur: subject movement plus camera shake over the exposure time.
